@@ -5,7 +5,7 @@
   <div class="bol-body-title">
     Bytes of Legacy
   </div>
-  <div class="bol-card-grid bol-body-content">
+  <div class="bol-card-grid bol-body-content" id="slot-container">
     {% for slot in slots %}
       {% include 'legacy/partials/card.html' with slot=slot %}
     {% endfor %}

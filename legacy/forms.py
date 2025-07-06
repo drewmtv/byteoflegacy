@@ -19,6 +19,7 @@ class SlotForm(forms.ModelForm):
             'back_text_color',
             'payment_proof',
             'email',
+            'payment_amount'
         ]
 
         widgets = {
@@ -31,7 +32,7 @@ class SlotForm(forms.ModelForm):
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Name here...',
-                'maxlength': '15'
+                'maxlength': '40'
             }),
             'front_bg_color': forms.TextInput(attrs={
                 'type': 'color', 
@@ -48,8 +49,8 @@ class SlotForm(forms.ModelForm):
             'message': forms.Textarea(attrs={
                 'class': 'form-control', 
                 'rows': 3, 
-                'maxlength': '100', 
-                'placeholder': 'Enter your legacy message (max 100 characters)'
+                'maxlength': '150', 
+                'placeholder': 'Enter your legacy message (max 150 characters)'
                 }),
             'link': forms.URLInput(attrs={
                 'class': 'form-control',
@@ -67,4 +68,5 @@ class SlotForm(forms.ModelForm):
                 'onchange': 'colorTextChange(this.value, document.getElementById("id_name"), document.getElementById("front-text-gauge"))',
                 'oninput': 'colorTextChange(this.value, document.getElementById("id_message"), document.getElementById("back-text-gauge"))'
                 }),
+            'payment_amount': forms.HiddenInput()
         }

@@ -37,5 +37,58 @@
             {% endblock %}
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const container = document.getElementById('slot-container');
+        let offset = 0;
+        const limit = 20;
+        let loading = false;
+        let allLoaded = false;
+
+        async function loadSlots() {
+            if (loading || allLoaded) return;
+
+            loading = true;
+            try {
+            const response = await fetch(`/slots/chunk/?offset=${offset}&limit=${limit}`);
+            const data = await response.json();
+
+            if (data.slots.length === 0) {
+                allLoaded = true;
+                return;
+            }
+
+            data.slots.forEach(slot => {
+                const button = document.createElement('button');
+                button.className = `slot-btn ${slot.claimed ? 'taken' : 'available'}`;
+                button.disabled = slot.claimed;
+                button.dataset.slot = slot.slot_number;
+                button.innerHTML = `
+                ${slot.slot_number}<br>
+                ${!slot.claimed ? `<span style="color:#2A9DF4;font-weight:bold;">${slot.price}</span>` : ''}
+                `;
+                container.appendChild(button);
+            });
+
+            offset += limit;
+            loading = false;
+            } catch (err) {
+            console.error('Error loading slots:', err);
+            loading = false;
+            }
+        }
+
+        // Initial load
+        loadSlots();
+
+        // Infinite scroll
+        window.addEventListener('scroll', () => {
+            const bottomReached = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+            if (bottomReached) loadSlots();
+        });
+        });
+    </script>
+
 </body>
 </html>

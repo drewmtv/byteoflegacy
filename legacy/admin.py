@@ -4,7 +4,7 @@ from .models import Slot
 
 @admin.register(Slot)
 class SlotAdmin(admin.ModelAdmin):
-    list_display = ('slot_number', 'name', 'email', 'payment_proof', 'verified')
+    list_display = ('slot_number', 'name', 'email', 'payment_amount', 'payment_proof', 'verified')
     actions = ['verify_and_notify']
 
     def verify_and_notify(self, request, queryset):

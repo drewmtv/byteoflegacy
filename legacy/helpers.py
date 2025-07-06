@@ -1,6 +1,12 @@
 from .models import Slot
+from django.core.cache import cache
 
 def get_all_slots_with_status():
+    cache_key = "all_slots_with_status"
+    data = cache.get(cache_key)
+    if data:
+        return data
+
     total_slots = 20000
     all_claimed_slots = {slot.slot_number: slot for slot in Slot.objects.all()}
 
@@ -20,7 +26,8 @@ def get_all_slots_with_status():
             'claimed': bool(slot),  # True if a Slot exists
             'verified': slot.verified if slot else False,
             'data': slot,  # The Slot instance or None
-            'price': f"₱{price}",
+            'price': f"{price:.2f}",
         })
-
+    
+    cache.set(cache_key, all_slots, timeout=60)  # cache for 1 min
     return all_slots

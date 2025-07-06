@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
+from django.http import JsonResponse
+from django.core.cache import cache
 
 from .models import Slot
 from .forms import SlotForm
@@ -16,6 +19,32 @@ def index(request):
 # About page
 def about(request):
     return render(request, 'legacy/about.html')
+
+# New chunk view for AJAX requests
+def slot_chunk_view(request):
+    try:
+        offset = int(request.GET.get('offset', 0))
+        limit = int(request.GET.get('limit', 20))
+    except (ValueError, TypeError):
+        return JsonResponse({'error': 'Invalid offset or limit'}, status=400)
+
+    try:
+        all_slots = get_all_slots_with_status() or []
+        sliced = all_slots[offset:offset + limit]
+
+        slot_data = [
+            {
+                'slot_number': slot['slot_number'],
+                'claimed': slot['claimed'],
+                'price': slot['price'],
+            }
+            for slot in sliced
+        ]
+
+        return JsonResponse({'slots': slot_data})
+
+    except Exception as e:
+        return JsonResponse({'error': f'Unexpected error: {str(e)}'}, status=500)
 
 # Claim a byte view
 def claim_byte(request, slot=None):
@@ -61,6 +90,9 @@ def claim_byte(request, slot=None):
                 recipient_list=[slot.email],
                 fail_silently=False,
             )
+
+            # Invalidate the cached slot list
+            cache.delete("all_slots_with_status")
 
             return redirect('legacy:success')
     else:

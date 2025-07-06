@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: byte-of-legacy-web
+    plan: free
+    env: python
+    region: singapore  # or oregon/frankfurt/etc.
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn byte_of_legacy.asgi:application -k uvicorn.workers.UvicornWorker
+    autoDeploy: true
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: byte_of_legacy.settings
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: False
+      - key: ALLOWED_HOSTS
+        value: byte-of-legacy.onrender.com
+      - key: Supabase_URL
+        sync: false
+      - key: Supabase_SERVICE_KEY
+        sync: false
+      - key: Supabase_STORAGE_BUCKET
+        sync: false
+      - key: Supabase_STORAGE_BUCKET_CONFIDENTIAL
+        sync: false
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false

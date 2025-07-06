@@ -11,6 +11,10 @@
     text-align: left;
     margin: 15px auto;
   }
+  
+  .slot-btn > span {
+      font-size: 0.5rem;
+  }
 
   .bol-top-forms {
     position: relative;
@@ -52,9 +56,10 @@
 
   @media (max-width: 768px) {
     /* Mobile styles */
-    .bol-legacy-card, .bol-form-color, .bol-submit-button {
+    .bol-legacy-card, .bol-form-color, .bol-submit-button, .qr-payment-image {
       width: 80%;
     }
+
     .upload-proof > .bol-custom-file-upload, .bol-submit-button {
       width: 80%;
       padding: 10px 20px;
@@ -81,7 +86,7 @@ Claim your Byte
     <!-- Modal content -->
      <span class="close">&times;</span>
     <div class="modal-content">
-      <div class="slot-grid">
+      <div class="slot-grid" id="slot-container">
         {% for slot in all_slots %}
           <button 
             type="button"
@@ -94,7 +99,7 @@ Claim your Byte
             {{ slot.slot_number }}
             <br>
             {% if not slot.claimed %}
-              <span style="color: #2A9DF4; font-weight: bold;">{{ slot.price }}</span>
+              <span style="color: #2A9DF4; font-weight: bold;">₱{{ slot.price }}</span>
             {% endif %}
           </button>
         {% endfor %}
@@ -112,6 +117,7 @@ Claim your Byte
     <div class="bol-form-color bol-top-forms">
       <label for="id_slot_number">Slot #:</label>
       {{ form.slot_number }}
+      {{ form.payment_amount }}
     </div>
     <p id="price-indicator" style="font-weight: bold;"></p>
     <br>
@@ -168,10 +174,10 @@ Claim your Byte
         <p>Account Number: 11531138530</p>
       </div>
       <div class="bol-payment-card">
-        <img src="{% static 'legacy/payment qrs/gcash-2d7013f1-c935-4637-a398-a4fdaef125a4 copy.png' %}" alt="GCash QR" class="qr-payment-image">
+        <img src="{% static 'legacy/payment qrs/melanie-gcash-qr-2d7013f1-c935-4637-a398-a4fdaef125a4 copy.png' %}" alt="GCash QR" class="qr-payment-image">
         <h3>GCash</h3>
-        <h2>Name: BOL-TCHSRT</h2>
-        <p>Account Number: 09260854388</p>
+        <h2>Name: Melanie M.</h2>
+        <p>Account Number: 09951416582</p>
       </div>
       
       <div class="upload-proof">
@@ -342,17 +348,32 @@ Claim your Byte
 
 
   const slotField = document.getElementById('id_slot_number'); // Make sure your field's ID matches
-  const priceIndicator = document.getElementById('price-indicator')
+  const priceIndicator = document.getElementById('price-indicator');
+  const payment_amount_holder = document.getElementById('id_payment_amount');
+
+  const priceMap = {};
 
   document.querySelectorAll('.slot-btn').forEach(button => {
+    const slot = button.getAttribute('data-slot');
+    const price = button.getAttribute('data-price');
+    priceMap[slot] = price;
+
     button.addEventListener('click', () => {
-      const slot = button.getAttribute('data-slot');
-      const price_watch = button.getAttribute('data-price');
       slotField.value = slot;
-      priceIndicator.innerHTML = price_watch + " only.";
+      priceIndicator.innerHTML = "₱" + price + " only.";
+      payment_amount_holder.value = price;
       modal.style.display = "none";
     });
   });
+
+  window.addEventListener("load", () => {
+    const currentSlot = slotField.value;
+    if (priceMap[currentSlot]) {
+      payment_amount_holder.value = priceMap[currentSlot];
+      priceIndicator.innerHTML = "₱" + priceMap[currentSlot] + " only.";
+    }
+  });
+
 
   // When the user clicks anywhere outside of the modal, close it
   window.onclick = function(event) {
