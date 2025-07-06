@@ -17,7 +17,17 @@ services:
       - key: DEBUG
         value: False
       - key: ALLOWED_HOSTS
-        value: byte-of-legacy.onrender.com
+        value: byte-of-legacy.onrender.com,*
+      - key: Supabase_DB_NAME
+        sync: false
+      - key: Supabase_DB_USER
+        sync: false
+      - key: Supabase_DB_PASSWORD
+        sync: false
+      - key: Supabase_DB_HOST
+        sync: false
+      - key: Supabase_DB_PORT
+        sync: false
       - key: Supabase_URL
         sync: false
       - key: Supabase_SERVICE_KEY
