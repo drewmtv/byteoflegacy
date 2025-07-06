@@ -1,0 +1,59 @@
+{% extends "legacy/layout.html" %}
+
+{% block extra_heads %}
+<style>
+    .bol-body-title {
+        margin: 2rem auto;
+        max-height: 100%;
+    }
+</style>
+{% endblock %}
+
+{% block title %}About Byte of Legacy{% endblock %}
+
+{% block content %}
+<div class="bol-main-content-container bol-body-content">
+    <div class="bol-body-title">
+        About "Byte of Legacy"
+        <p class="bol-about-statements">
+            Byte of Legacy is more than a digital wall — it’s a living mosaic of stories, memories, and dreams. Each byte you claim is a meaningful mark on our collective startup journey.
+        </p>
+    </div>
+    <div class="bol-body-title">
+        Our Vision
+        <p class="bol-about-statements">
+            We’re building a unique platform where individuals, friends, and supporters can eternally leave their legacy — a pixel-sized footprint on a bigger story. Unlike traditional fundraising, here you get to be part of an interactive art piece, permanently showcased for the world.
+        </p>
+        <p class="bol-about-statements">
+            Your support fuels the growth of our startup, helping turn ideas into reality. In return, you gain not just a space on the wall, but a share in our story.
+        </p>
+    </div>
+    <div class="bol-body-title">
+        How It Works
+        <div style="max-width: 700px; margin: auto; font-weight: 300; text-align: left; font-size: 1.25rem;">
+            <ol>
+                <li>
+                    <p>
+                        <strong>Claim your Byte:</strong> Choose your spot on the digital wall by submitting your name, message, and optional link or icon.
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <strong>Support our Journey:</strong> Make a manual payment via GCash or SeaBank and upload proof of your support.
+                    </p>
+                </li>
+                <li>
+                    <strong>Be Featured:</strong> After verification, your byte is permanently displayed, part of the mosaic of our community.
+                </li>
+            </ol>
+        </div>
+    </div>
+    <div class="bol-body-title">
+        Join Us
+        <p class="bol-about-statements">
+            This is more than fundraising — it’s a chance to be remembered, to connect, and to build something meaningful together. Whether you’re a supporter, a dreamer, or a believer in our mission, your byte counts.
+        </p>
+        <a href="{% url 'legacy:claim' %}" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.2rem;">Claim Your Byte Today</a>
+    </div>
+</div>
+{% endblock %}

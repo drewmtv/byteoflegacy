@@ -1,0 +1,14 @@
+{% extends 'legacy/layout.html' %}
+
+{% block content %}
+<div class="bol-main-content-container">
+  <div class="bol-body-title">
+    Bytes of Legacy
+  </div>
+  <div class="bol-card-grid bol-body-content">
+    {% for slot in slots %}
+      {% include 'legacy/partials/card.html' with slot=slot %}
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

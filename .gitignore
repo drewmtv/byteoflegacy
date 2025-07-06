@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+*.log
+
+# Virtual Environment
+env/
+.venv/
+
+# Django Migrations
+**/migrations/
+!*/migrations/__init__.py
+
+# Database (if using SQLite for dev)
+db.sqlite3
+
+# Media & Uploads
+/media/
+*.sqlite3
+
+# Static files (collected via collectstatic)
+staticfiles/
+static/
+
+# Secrets
+.env
+
+# VSCode / IDEs
+.vscode/
+.idea/
+*.swp
+
+# System
+.DS_Store
+Thumbs.db
+
+# pytest / coverage
+htmlcov/
+.coverage
+.cache
+
+# pip
+pip-wheel-metadata/
+__pypackages__/

@@ -1,0 +1,364 @@
+{% extends 'legacy/layout.html' %}
+{% load static %}
+{% block extra_heads %}
+<style>
+  .bol-legacy-card, .bol-form-color {
+    width: 56.25%;
+    margin: auto;
+  }
+
+  .bol-form-color {
+    text-align: left;
+    margin: 15px auto;
+  }
+
+  .bol-top-forms {
+    position: relative;
+    border-radius: 50px;    
+    background-color: #4CAF50;
+    overflow: hidden;
+  }
+
+  .bol-top-forms > label {
+    position: absolute;
+    font-size: 0.675rem;
+    top: 0px;
+    left: 10px;
+    color: rgba(0, 0, 0, 0.63);
+  }
+
+  .bol-top-forms > input, .bol-gauge {
+    width: 90%;
+    font-size: 1.2rem;
+    background-color: transparent;
+    outline: 0;
+    border: 0;
+    padding: 10px 0;
+    margin: auto;
+    display: block;
+    color: black;
+  }
+
+  #id_slot_number, .bol-custom-file-upload {
+    text-align: center;
+    font-weight: bold;
+  }
+
+  /* Desktop default styles (base) */
+
+  @media (max-width: 1024px) {
+    /* Tablet styles */
+  }
+
+  @media (max-width: 768px) {
+    /* Mobile styles */
+    .bol-legacy-card, .bol-form-color, .bol-submit-button {
+      width: 80%;
+    }
+    .upload-proof > .bol-custom-file-upload, .bol-submit-button {
+      width: 80%;
+      padding: 10px 20px;
+      font-size: 1.2rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block title %}
+Claim your Byte
+{% endblock %}
+
+{% block content %}
+<!-- The title -->
+<div class="bol-body-title">
+  Claim your Byte
+</div>
+<div class="bol-body-content">
+
+  <button id="myBtn">Check Open Slots</button>
+  <!--Slots Available Modal -->
+  <div id="myModal" class="modal">
+    <!-- Modal content -->
+     <span class="close">&times;</span>
+    <div class="modal-content">
+      <div class="slot-grid">
+        {% for slot in all_slots %}
+          <button 
+            type="button"
+            class="slot-btn {% if slot.claimed %}taken{% else %}available{% endif %}"
+            {% if slot.claimed %}disabled{% endif %}
+            data-slot="{{ slot.slot_number }}"
+            style="font-weight: 100;"
+            data-price="{{ slot.price }}"
+          >
+            {{ slot.slot_number }}
+            <br>
+            {% if not slot.claimed %}
+              <span style="color: #2A9DF4; font-weight: bold;">{{ slot.price }}</span>
+            {% endif %}
+          </button>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- The Form -->
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="bol-form-color bol-top-forms">
+      <label for="id_email">Email Address:</label>
+      {{ form.email }}
+    </div>
+    <div class="bol-form-color bol-top-forms">
+      <label for="id_slot_number">Slot #:</label>
+      {{ form.slot_number }}
+    </div>
+    <p id="price-indicator" style="font-weight: bold;"></p>
+    <br>
+    Front
+    <div class="bol-legacy-card">
+      <div class="bol-front-card" id="front_card">
+        <div class="bol-photo-card" style="position: relative;">
+          <img src="" alt="" class="bol-photo-card-actual" id="bol-photo-card-preview">
+          <div class="bol-upload-button-group">
+            <input type="file" name="icon" id="id_icon" class="form-control" accept="image/*" required>
+            <label for="id_icon" class="bol-custom-file-upload">Upload your photo.</label>
+          </div>
+        </div>
+        
+        <div class="bol-front-card-name">
+          {{ form.name }}
+        </div>
+      </div>
+    </div>
+    
+    <div class="bol-form-color">
+      <label for="id_front_bg_color">Change Background Color: </label>
+      {{ form.front_bg_color }} <input class="bol-gauge" id="front-bg-gauge" maxlength="7" oninput="hexBackgroundColorChange(this.value, document.getElementById('id_front_bg_color'), document.getElementById('front_card'))">
+    </div>
+    <div class="bol-form-color">
+      <label for="id_front_text_color">Change Text Color: </label>
+      {{ form.front_text_color }} <input class="bol-gauge" id="front-text-gauge" maxlength="7" oninput="hexTextColorChange(this.value, document.getElementById('id_front_text_color'), document.getElementById('id_name'))">
+      <br>
+    </div>
+    Back
+    <div class="bol-legacy-card">
+      <div class="bol-back-card-form" id="back_card">
+        <div id="back_card_content">
+          {{ form.message }}
+          {{ form.link }}
+        </div>
+      </div>        
+    </div>
+    <div class="bol-form-color">
+      <label for="id_back_bg_color">Change Background Color: </label>
+      {{ form.back_bg_color }} <input id="back-bg-gauge" class="bol-gauge" maxlength="7" oninput="hexBackgroundColorChange(this.value, document.getElementById('id_back_bg_color'), document.getElementById('back_card'))">
+    </div>
+    <div class="bol-form-color">
+      <label for="id_back_text_color">Change Text Color: </label>
+      {{ form.back_text_color }} <input class="bol-gauge" maxlength="7" id="back-text-gauge" oninput="hexTextColorChange(this.value, document.getElementById('id_back_text_color'), document.getElementById('id_message'))">
+      <br>
+    </div>
+
+    <div class="bol-payment-confirm">
+      <div class="bol-payment-card">
+        <img src="{% static 'legacy/payment qrs/seabank27d92168-ee95-41d8-9af4-b15926c90fed copy.png' %}" alt="Seabank QR" class="qr-payment-image">
+        <h3>Seabank</h3>
+        <h2>Name: Andrew M. Matheu</h2>
+        <p>Account Number: 11531138530</p>
+      </div>
+      <div class="bol-payment-card">
+        <img src="{% static 'legacy/payment qrs/gcash-2d7013f1-c935-4637-a398-a4fdaef125a4 copy.png' %}" alt="GCash QR" class="qr-payment-image">
+        <h3>GCash</h3>
+        <h2>Name: BOL-TCHSRT</h2>
+        <p>Account Number: 09260854388</p>
+      </div>
+      
+      <div class="upload-proof">
+        <input type="file" name="payment_proof" id="id_payment_proof" class="form-control" accept="image/*" required>
+        <label for="id_payment_proof" class="bol-custom-file-upload">Upload payment proof.</label>
+        <div class="bol-photo-card">
+          <img src="" alt="payment-proof-preview" class="bol-photo-card-actual" id="payment-proof-preview">
+        </div>
+      </div>
+    <div>
+      <button type="submit" class="bol-submit-button">Submit</button>
+    </div>
+  </form>
+  {% if messages %}
+    <div class="alert-container">
+      {% for message in messages %}
+        <div class="alert {{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  </div>
+
+<script>
+  // Icon preview 
+  const fileInput = document.getElementById('id_icon');
+  const previewImage = document.getElementById('bol-photo-card-preview');
+
+  // Payment preview
+  const filePayment = document.getElementById('id_payment_proof');
+  const payment_preview = document.getElementById('payment-proof-preview');
+
+  const front_bg_color = document.getElementById("id_front_bg_color");
+  const front_card = document.getElementById("front_card");
+  const front_text_color = document.getElementById("id_front_text_color");
+  const front_text = document.getElementById("id_name");
+  
+  const back_bg_color = document.getElementById("id_back_bg_color");
+  const back_card = document.getElementById("back_card");
+  const back_text_color = document.getElementById("id_back_text_color");
+  const back_text = document.getElementById("id_message");
+  const link_color = document.getElementById("id_link");
+  const default_color = "#ffffff";
+
+  // Color Guage indicator
+  const front_bg_gauge = document.getElementById("front-bg-gauge");
+  const front_text_gauge = document.getElementById("front-text-gauge");
+  const back_bg_gauge = document.getElementById("back-bg-gauge");
+  const back_text_gauge = document.getElementById("back-text-gauge");
+  
+  // Get the modal
+  var modal = document.getElementById("myModal");
+
+  // Get the button that opens the modal
+  var btn = document.getElementById("myBtn");
+
+
+  // Get the <span> element that closes the modal
+  var span = document.getElementsByClassName("close")[0];
+
+  fileInput.setAttribute('accept', 'image/*');
+
+  fileInput.addEventListener('change', function () {
+    const file = this.files[0];
+
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        // fileNameDisplay.textContent = "Please upload a valid image file.";
+        previewImage.src = "";
+        return;
+      }
+
+      const MAX_FILE_SIZE_MB = 10;
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+          alert("Image must be less than 2MB.");
+          return;
+      }
+
+      // Show filename
+      // fileNameDisplay.textContent = file.name;
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        previewImage.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      previewImage.src = "";
+    }
+  });
+
+  filePayment.setAttribute('accept', 'image/*');
+
+  filePayment.addEventListener('change', function () {
+    const file = this.files[0];
+
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        // fileNameDisplay.textContent = "Please upload a valid image file.";
+        payment_preview.src = "";
+        return;
+      }
+
+      const MAX_FILE_SIZE_MB = 10;
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+          alert("Image must be less than 2MB.");
+          return;
+      }
+
+      // Show filename
+      // fileNameDisplay.textContent = file.name;
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        payment_preview.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      payment_preview.src = "";
+    }
+  });
+
+  function hexBackgroundColorChange(input, target_output, bg_output) {
+    target_output.value = (input.length == 7) ? input : default_color;
+    bg_output.style.backgroundColor = (input.length == 7) ? input : default_color;
+  }
+
+  function hexTextColorChange(input, target_output, text_output) {
+    target_output.value = (input.length == 7) ? input : default_color;
+    text_output.style.color = (input.length == 7) ? input : default_color;
+  }
+
+  function colorBackgroundChange(input, output, guage_checker) {
+    output.style.backgroundColor = input;
+    guage_checker.value = input;
+  }
+
+  function colorTextChange(input, output, guage_checker) {
+    output.style.color = input;
+    guage_checker.value = input;
+  }
+
+  document.addEventListener("DOMContentLoaded", (e) => {
+    front_card.style.backgroundColor = front_bg_color.value;
+    front_text.style.color = front_text_color.value;
+    back_card.style.backgroundColor = back_bg_color.value;
+    back_text.style.color = back_text_color.value;
+    link_color.style.color = back_text_color.value;
+    front_bg_gauge.value = front_bg_color.value;
+    front_text_gauge.value = front_text_color.value;
+    back_bg_gauge.value = back_bg_color.value;
+    back_text_gauge.value = back_text_color.value;
+  })
+
+  // When the user clicks the button, open the modal 
+  btn.onclick = function() {
+    modal.style.display = "block";
+  }
+
+  // When the user clicks on <span> (x), close the modal
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+
+
+
+  const slotField = document.getElementById('id_slot_number'); // Make sure your field's ID matches
+  const priceIndicator = document.getElementById('price-indicator')
+
+  document.querySelectorAll('.slot-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const slot = button.getAttribute('data-slot');
+      const price_watch = button.getAttribute('data-price');
+      slotField.value = slot;
+      priceIndicator.innerHTML = price_watch + " only.";
+      modal.style.display = "none";
+    });
+  });
+
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+</script>
+{% endblock %}

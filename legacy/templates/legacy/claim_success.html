@@ -1,0 +1,9 @@
+{% extends 'legacy/layout.html' %}
+
+{% block content %}
+<div class="text-center my-5">
+  <h2>🎉 Claim Submitted!</h2>
+  <p>Your Byte of Legacy has been submitted and is pending admin verification.</p>
+  <a href="{% url 'legacy:index' %}" class="btn btn-primary mt-3">Return to Wall</a>
+</div>
+{% endblock %}

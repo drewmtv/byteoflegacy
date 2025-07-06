@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Byte of Legacy{% endblock %}</title>
+    <link rel="shortcut icon" href="{% static 'legacy/favicon/byte of legacy copy.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'legacy/styles/main_style.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    {% block extra_heads %}{% endblock %}
+
+    <style>
+        body, .bol-legacy-card {
+            background-image: url("{% static 'legacy/favicon/Rectangle 1 copy.png' %}");
+        }
+    </style>
+</head>
+<body>
+    <div class="bol-fluid-container bol-header-height">        
+        <div class="bol-container bol-header">
+            <nav class="bol-navbar">
+                <a href="{% url 'legacy:index' %}" class="bol-navbar-brand">
+                    <img src="{% static 'legacy/favicon/Group 1 copy.png' %}" alt="Byte of Legacy" id="bol-nav-logo">
+                </a>
+                <ul class="bol-navbar-nav">
+                    <li class="bol-nav-item"><a href="{% url 'legacy:about' %}" class="bol-nav-link">About</a></li>
+                    <li class="bol-nav-item"><a href="{% url 'legacy:claim' %}" class="bol-nav-link" style="background-color: #2A9DF4;">Claim a Byte!</a></li>
+                </ul>
+            </nav>
+        </div>
+                
+    </div>
+    <div class="bol-fluid-container bol-body-height">
+        <div class="bol-container block-main-content">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{% load static %}
+<div class="bol-legacy-card" id="#{{ slot.data.name }}">
+  {% if slot.claimed %}
+    {% if slot.verified %}
+      <div class="bol-card-flip-inner">
+        <div class="bol-front-card" style="background-color: {{ slot.data.front_bg_color }}; color: {{ slot.data.front_text_color }};">
+          <div class="bol-photo-card">
+            <img src="{{ slot.data.icon }}" alt="{{ slot.data.name }}" class="bol-photo-card-actual">
+          </div>
+          <div class="bol-front-card-name">
+            {{ slot.data.name }}
+          </div>
+        </div>
+        <div class="bol-back-card" style="background-color: {{ slot.data.back_bg_color }}; color: {{ slot.data.back_text_color }};">
+          <div class="bol-back-card-message">
+            <p>“{{ slot.data.message }}”</p>
+            {% if slot.data.link %}
+              <a href="{{ slot.data.link }}" target="_blank">🔗</a>
+            {% endif %}
+          </div>      
+        </div>
+      </div>
+    {% else %}
+      <div class="bol-card-pending">
+        <h1>Pending</h1>
+        <small>Slot #: {{ slot.slot_number }}</small>
+      </div>
+    {% endif %}
+  {% else %}
+    <!-- Empty slot UI -->
+     <a href="{% url 'legacy:claim' slot=slot.slot_number %}">
+      <div class="bol-card-empty">
+        <p class="bol-available">Available</p>
+        <small>Slot #: {{ slot.slot_number }}</small>
+        
+          <button style="padding: 2px 5px; display: block; margin: 20px auto auto auto;">
+            Claim this Byte for {{ slot.price }}
+          </button>        
+      </div>
+    </a>
+  {% endif %}
+</div>
