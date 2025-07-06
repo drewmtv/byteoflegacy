@@ -1,0 +1,475 @@
+body {
+  margin: 0;
+  background-color: #49451dfd;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  height: 100vh ;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* container styles */
+.bol-fluid-container {
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+.bol-container {
+  width: 75%;
+  margin: auto;
+  
+}
+
+.bol-header-height {
+  height: 15vh;
+}
+
+.bol-body-height {  
+  height: 85vh;
+}
+
+.block-main-content {
+  background-color: #C7FF4A;
+  border-radius: 12px;
+  height: 100%;
+}
+
+/* index.html styles */
+.bol-main-content-container {
+  height: 100%;
+}
+
+.bol-body-title {
+  font-weight: bold;
+  font-size: 1.75em;
+  max-height: 10%;
+  padding: 10px;
+  text-align: center;
+}
+
+.bol-body-content {
+  padding: 10px;
+  max-height: 75%;
+  overflow-y: scroll;
+  text-align: center;
+}
+
+.bol-body-content::-webkit-scrollbar, .modal-content::-webkit-scrollbar {
+  display: none;
+}
+
+/* nav styles */
+
+.bol-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;  
+  background-color: #FAF9F6;
+  border-radius: 0 0 12px 12px;
+}
+
+.bol-navbar-brand {
+  color: white;
+  font-size: 25px;
+}
+
+.bol-navbar-nav {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bol-nav-item {
+  display: inline;
+}
+
+.bol-nav-link {
+  color: #2E2E2E;
+  font-size: 1.25rem;
+  margin: 6px;
+  padding: 6px;
+  border-radius: 24px;
+}
+
+#bol-nav-logo {
+  height: 5vh;
+  margin: 0 15px;
+  padding: 6px;
+}
+
+/* card styles */
+.bol-legacy-card {
+  aspect-ratio: 1.586;
+  border-radius: 12px;
+  background-color: #00000031;
+  overflow: hidden;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  perspective: 1000px;
+}
+
+.bol-card-flip-inner {
+  height: 100%;
+  width: 100%;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  position: relative;
+}
+
+.bol-legacy-card:hover .bol-card-flip-inner {
+  transform: rotateY(180deg);
+}
+
+.bol-front-card, .bol-back-card {
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  position: absolute;
+  border-radius: 12px;
+}
+
+.bol-front-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.bol-back-card {
+  transform: rotateY(180deg);
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.bol-photo-card {
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 75%;
+  margin: 10px auto auto auto;
+}
+
+.bol-photo-card-actual {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.bol-front-card-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-grow: 1; /* takes all remaining vertical space */
+  font-weight: bold;
+  font-size: 1em;
+  text-align: center;
+  width: 100%;
+}
+
+.bol-back-card-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 75%;
+}
+
+.bol-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 5px;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.bol-card-empty {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-weight: bold;
+}
+
+.bol-available {
+  font-size: 1.25em;
+}
+
+.bol-card-pending {
+  text-align: center;
+  background-color: yellow;
+}
+
+/* claim card form styles */
+.bol-legacy-card-form {
+  width: 75%;
+  margin: auto;
+}
+
+#id_icon, #id_payment_proof {
+  display: none;
+}
+
+.bol-custom-file-upload, .bol-submit-button {
+  display: inline-block;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 12px;
+  font-family: sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+.bol-submit-button {
+  margin-top: 10px;
+}
+
+.custom-file-upload:hover {
+  background-color: #45a049;
+}
+
+.bol-upload-button-group {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%);
+}
+
+#id_name, #id_message, #id_link {
+  font-weight: bold;
+  background-color: transparent;
+  border: none;
+  text-align: center;
+  width: 100%;
+  font-size: 1em;
+}
+
+.bol-back-card-form {
+  height: 100%;
+  width: 100%;
+}
+
+#back_card_content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 75%;
+  margin: auto;
+}
+
+#id_message {
+  resize: none;
+}
+
+#id_name::placeholder, #id_message::placeholder, #id_link::placeholder {
+  color: #ffffff;
+}
+
+#id_name:focus, #id_message:focus, #id_link:focus {
+  border: none;
+  outline: none;
+}
+
+/* qr payments */
+
+.bol-payment-confirm {
+  aspect-ratio: 1;
+}
+
+.bol-payment-card {
+  width: 90%;
+  margin: auto;
+}
+
+.qr-payment-image {
+  width: 30%;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 10px;
+  border: 1px solid #888;
+  width: 80%;
+  height: 75%;
+  overflow: scroll;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 40px);
+  gap: 3px;
+  max-width: 100%; /* or set a fixed width if needed */
+  margin-bottom: 20px;
+  margin: auto;
+  justify-content: space-around;
+}
+
+.slot-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ccc;
+  background-color: #f0f0f0;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  padding: 0;
+  font-size: 0.9em;
+  border-radius: 4px;
+}
+
+.slot-btn.available:hover {
+  background-color: #d4f8d4;
+}
+
+.slot-btn.taken {
+  background-color: #f8d4d4;
+  cursor: not-allowed;
+}
+
+/* About Styles */
+
+.bol-about-statements {
+  max-width: 600px; 
+  margin: auto; 
+  font-size: 1.2rem; 
+  color: #444;
+  font-style: italic;
+  font-weight: 300;
+  margin-top: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .bol-custom-file-upload, .bol-submit-button {
+    display: inline-block;
+    padding: 5px 10px;
+    cursor: pointer;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 12px;
+    font-family: sans-serif;
+    font-size: 0.5em;
+    transition: background-color 0.3s ease;
+  }
+
+  .bol-header-height {
+    height: 10vh;
+  }
+
+  .bol-body-height {  
+    height: 90vh;
+  }
+
+  .bol-container {
+    width: 85%;
+  }
+
+  .bol-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;  
+    background-color: #FAF9F6;
+    border-radius: 0 0 12px 12px;
+  }
+
+  .bol-navbar-brand {
+    color: white;
+    font-size: 25px;
+  }
+
+  .bol-navbar-nav {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .bol-nav-item {
+    display: inline;
+  }
+
+  .bol-nav-link {
+    color: #2E2E2E;
+    font-size: 1rem;
+    margin: 6px;
+    padding: 6px;
+    border-radius: 24px;
+  }
+
+  #bol-nav-logo {
+    height: 3vh;
+    margin: 0 5px;
+    padding: 6px;
+  }
+}
+
+  .alert-container {
+  margin: 10px auto;
+  width: 60%;
+  text-align: center;
+}
+
+.alert {
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 0.95rem;
+}
+
+/* Default styling if no tag is provided */
+.alert.info {
+  background-color: #e0f0ff;
+  color: #0366d6;
+}
+.alert.success {
+  background-color: #e6ffed;
+  color: #1a7f37;
+}
+.alert.warning {
+  background-color: #fff4d1;
+  color: #b36b00;
+}
+.alert.error {
+  background-color: #ffe4e4;
+  color: #b00020;
+}

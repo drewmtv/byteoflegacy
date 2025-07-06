@@ -4,7 +4,9 @@ services:
     plan: free
     env: python
     region: singapore  # or oregon/frankfurt/etc.
-    buildCommand: pip install -r requirements.txt
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
     startCommand: gunicorn byte_of_legacy.asgi:application -k uvicorn.workers.UvicornWorker
     autoDeploy: true
     envVars:
