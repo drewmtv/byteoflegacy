@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.core.cache import cache
+from django.http import HttpResponseRedirect
 
 from .models import Slot
 from .forms import SlotForm
@@ -119,3 +120,7 @@ def claim_byte(request, slot=None):
 # Success confirmation page
 def claim_success(request):
     return render(request, "legacy/claim_success.html")
+
+def page_not_found(request, exception):
+    # Redirect to the homepage or any other page
+    return HttpResponseRedirect('/')
