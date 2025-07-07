@@ -1,6 +1,7 @@
 from django.core.mail import send_mail
 from django.contrib import admin
 from .models import Slot
+from django.core.cache import cache
 
 @admin.register(Slot)
 class SlotAdmin(admin.ModelAdmin):
@@ -21,5 +22,8 @@ class SlotAdmin(admin.ModelAdmin):
                     fail_silently=False,
                 )
                 updated += 1
+
+        # Invalidate cache after updates
+        cache.delete("all_slots_with_status")
         self.message_user(request, f"{updated} slots verified and notified.")
     verify_and_notify.short_description = "Verify selected slots and send email"

@@ -39,55 +39,140 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-        const container = document.getElementById('slot-container');
-        let offset = 0;
-        const limit = 20;
-        let loading = false;
-        let allLoaded = false;
+        // document.addEventListener("DOMContentLoaded", function () {
+        // let offset = 0;
+        // const limit = 20;
+        // let loading = false;
+        // let allLoaded = false;
 
-        async function loadSlots() {
-            if (loading || allLoaded) return;
+        // async function loadSlots() {
+        //     if (loading || allLoaded) return;
 
-            loading = true;
-            try {
-            const response = await fetch(`/slots/chunk/?offset=${offset}&limit=${limit}`);
-            const data = await response.json();
+        //     loading = true;
+        //     try {
+        //     const response = await fetch(`/slots/chunk/?offset=${offset}&limit=${limit}`);
+        //     const data = await response.json();
 
-            if (data.slots.length === 0) {
-                allLoaded = true;
-                return;
-            }
+        //     if (data.slots.length === 0) {
+        //         allLoaded = true;
+        //         return;
+        //     }
 
-            data.slots.forEach(slot => {
-                const button = document.createElement('button');
-                button.className = `slot-btn ${slot.claimed ? 'taken' : 'available'}`;
-                button.disabled = slot.claimed;
-                button.dataset.slot = slot.slot_number;
-                button.innerHTML = `
-                ${slot.slot_number}<br>
-                ${!slot.claimed ? `<span style="color:#2A9DF4;font-weight:bold;">${slot.price}</span>` : ''}
-                `;
-                container.appendChild(button);
-            });
+        //     data.slots.forEach(slot => {
+        //         const button = document.createElement('button');
+        //         button.className = `slot-btn ${slot.claimed ? 'taken' : 'available'}`;
+        //         button.disabled = slot.claimed;
+        //         button.dataset.slot = slot.slot_number;
+        //         button.innerHTML = `
+        //         ${slot.slot_number}<br>
+        //         ${!slot.claimed ? `<span style="color:#2A9DF4;font-weight:bold;">${slot.price}</span>` : ''}
+        //         `;
+        //         container.appendChild(button);
+        //     });
 
-            offset += limit;
-            loading = false;
-            } catch (err) {
-            console.error('Error loading slots:', err);
-            loading = false;
-            }
-        }
+        //     offset += limit;
+        //     loading = false;
+        //     } catch (err) {
+        //     console.error('Error loading slots:', err);
+        //     loading = false;
+        //     }
+        // }
 
-        // Initial load
-        loadSlots();
+        // // Initial load
+        // loadSlots();
 
-        // Infinite scroll
-        window.addEventListener('scroll', () => {
-            const bottomReached = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
-            if (bottomReached) loadSlots();
-        });
-        });
+        // // // Infinite scroll
+        // window.addEventListener('scroll', () => {
+        //     const bottomReached = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+        //     if (bottomReached) loadSlots();
+        // });
+        // });
+        // const container = document.getElementById('slot-container');
+        // let offset = 0;
+        // const limit = 20;
+
+        // function loadSlots() {
+        // fetch(`/slots/chunk/?offset=${offset}&limit=${limit}`)
+        //     .then(response => response.json())
+        //     .then(data => {
+        //     const container = document.getElementById('slot-container');
+        //     data.slots.forEach(slot => {
+        //         const div = document.createElement('div');
+        //         div.innerHTML = renderSlotCard(slot); // renderCard is your JS template function
+        //         container.appendChild(div);
+        //     });
+        //     offset += limit;
+        //     });
+        // }
+
+        // document.addEventListener("DOMContentLoaded", loadSlots);
+
+        // // index.html card rendering (JS equivalent of card.html)
+        // function renderSlotCard(slot) {
+        //     const div = document.createElement('div');
+        //     div.className = 'bol-legacy-card';
+        //     div.id = `#${slot.data?.name || ''}`;
+
+        //     if (slot.claimed) {
+        //         if (slot.verified) {
+        //         div.innerHTML = `
+        //             <div class="bol-card-flip-inner">
+        //             <div class="bol-front-card" style="background-color: ${slot.data.front_bg_color}; color: ${slot.data.front_text_color};">
+        //                 <div class="bol-photo-card">
+        //                 <img src="${slot.data.icon}" alt="${slot.data.name}" class="bol-photo-card-actual">
+        //                 </div>
+        //                 <div class="bol-front-card-name">
+        //                 ${slot.data.name}
+        //                 </div>
+        //             </div>
+        //             <div class="bol-back-card" style="background-color: ${slot.data.back_bg_color}; color: ${slot.data.back_text_color};">
+        //                 <div class="bol-back-card-message">
+        //                 <p>“${slot.data.message || ''}”</p>
+        //                 ${slot.data.link ? `<a href="${slot.data.link}" target="_blank">🔗</a>` : ''}
+        //                 </div>
+        //             </div>
+        //             </div>
+        //         `;
+        //         } else {
+        //         div.innerHTML = `
+        //             <div class="bol-card-pending">
+        //             <h1>Pending</h1>
+        //             <small>Slot #: ${slot.slot_number}</small>
+        //             </div>
+        //         `;
+        //         }
+        //     } else {
+        //         div.innerHTML = `
+        //         <a href="/claim/${slot.slot_number}/">
+        //             <div class="bol-card-empty">
+        //             <p class="bol-available">Available</p>
+        //             <small>Slot #: ${slot.slot_number}</small>
+        //             <button style="padding: 2px 5px; display: block; margin: 20px auto auto auto;">
+        //                 Claim this Byte for ₱${slot.price}
+        //             </button>
+        //             </div>
+        //         </a>
+        //         `;
+        //     }
+        //     return div;
+        // }
+
+        // // claim_byte.html slot button rendering
+        // function renderSlotButton(slot) {
+        //     const button = document.createElement('button');
+        //     button.type = 'button';
+        //     button.className = `slot-btn ${slot.claimed ? 'taken' : 'available'}`;
+        //     button.dataset.slot = slot.slot_number;
+        //     button.dataset.price = slot.price;
+        //     button.style.fontWeight = '100';
+        //     if (slot.claimed) {
+        //         button.disabled = true;
+        //     }
+        //     button.innerHTML = `${slot.slot_number}
+        //         <br>
+        //         ${!slot.claimed ? `<span style="color: #2A9DF4; font-weight: bold;">₱${slot.price}</span>` : ''}`;
+        //     return button;
+        // }
     </script>
 
 </body>

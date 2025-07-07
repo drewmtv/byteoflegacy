@@ -22,9 +22,10 @@ def about(request):
 
 # New chunk view for AJAX requests
 def slot_chunk_view(request):
+    MAX_LIMIT = 300
     try:
         offset = int(request.GET.get('offset', 0))
-        limit = int(request.GET.get('limit', 20))
+        limit = min(int(request.GET.get('limit', 20)), MAX_LIMIT)
     except (ValueError, TypeError):
         return JsonResponse({'error': 'Invalid offset or limit'}, status=400)
 
@@ -37,6 +38,15 @@ def slot_chunk_view(request):
                 'slot_number': slot['slot_number'],
                 'claimed': slot['claimed'],
                 'price': slot['price'],
+                'verified': slot['verified'],
+                'name': slot['name'],
+                'icon': slot['icon'],
+                'front_bg_color': slot['front_bg_color'],
+                'front_text_color': slot['front_text_color'],
+                'message': slot['message'],
+                'link': slot['link'],
+                'back_bg_color': slot['back_bg_color'],
+                'back_text_color': slot['back_text_color'],
             }
             for slot in sliced
         ]
@@ -62,7 +72,7 @@ def claim_byte(request, slot=None):
             try:
                 validate_image_file(icon_file, max_size_mb=10)
                 validate_image_file(proof_file, max_size_mb=10)
-
+                
                 icon_url = upload_to_supabase_media(icon_file, f"icons/{slot_number}_{icon_file.name}")
                 proof_url = upload_to_supabase_confidential(proof_file, f"payments/{slot_number}_{proof_file.name}")
 

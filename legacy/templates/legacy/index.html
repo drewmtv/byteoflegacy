@@ -6,9 +6,120 @@
     Bytes of Legacy
   </div>
   <div class="bol-card-grid bol-body-content" id="slot-container">
-    {% for slot in slots %}
-      {% include 'legacy/partials/card.html' with slot=slot %}
-    {% endfor %}
+    <!-- JavaScript will populate this -->
   </div>
 </div>
+
+<script>
+  const container = document.getElementById('slot-container');
+  let offset = 0;
+  const limit = 20;
+  let isLoading = false;
+  let allLoaded = false; // Optional: Set to true when no more data is available
+  
+  function loadSlots() {
+    if (isLoading || allLoaded) return; // Prevent overlapping calls
+    isLoading = true;
+
+    fetch(`/slots/chunk/?offset=${offset}&limit=${limit}`)
+      .then(response => response.json())
+      .then(data => {
+        data.slots.forEach(slot => {
+          container.appendChild(renderSlotCard(slot));
+          console.log(slot.slot_number + ": " + slot.verified);
+        });
+
+        if (data.slots.length < limit) {
+          allLoaded = true; // No more slots to load
+        }
+
+        offset += limit;
+
+        checkAndLoadIfShort();
+      })
+      .catch(error => {
+        console.error("Failed to load slots:", error);
+      })
+      .finally(() => {
+        isLoading = false;
+      });
+  }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadSlots();
+      checkAndLoadIfShort();
+    });
+    
+    // index.html card rendering (JS equivalent of card.html)
+    function renderSlotCard(slot) {
+      const div = document.createElement('div');
+      div.className = 'bol-legacy-card';
+      div.id = `#${slot.data?.name || ''}`;
+
+      if (slot.claimed) {
+          if (slot.verified) {
+          div.innerHTML = `
+              <div class="bol-card-flip-inner">
+              <div class="bol-front-card" style="background-color: ${slot.front_bg_color}; color: ${slot.front_text_color};">
+                  <div class="bol-photo-card">
+                  <img src="${slot.icon}" alt="${slot.name}" class="bol-photo-card-actual">
+                  </div>
+                  <div class="bol-front-card-name">
+                  ${slot.name}
+                  </div>
+              </div>
+              <div class="bol-back-card" style="background-color: ${slot.back_bg_color}; color: ${slot.back_text_color};">
+                  <div class="bol-back-card-message">
+                  <p>“${slot.message || ''}”</p>
+                  ${slot.link ? `<a href="${slot.link}" target="_blank">🔗</a>` : ''}
+                  </div>
+              </div>
+              </div>
+          `;
+          } else {
+          div.innerHTML = `
+              <div class="bol-card-pending">
+              <h1>Pending</h1>
+              <small>Slot #: ${slot.slot_number}</small>
+              </div>
+          `;
+          }
+      } else {
+          div.innerHTML = `
+          <a href="/claim/${slot.slot_number}/">
+              <div class="bol-card-empty">
+              <p class="bol-available">Available</p>
+              <small>Slot #: ${slot.slot_number}</small>
+              <button style="padding: 2px 5px; display: block; margin: 20px auto auto auto;">
+                  Claim this Byte for ₱${slot.price}
+              </button>
+              </div>
+          </a>
+          `;
+      }
+      return div;
+    }
+
+    // // Infinite scroll
+    const scrollContainer = document.querySelector('.bol-body-content');
+
+    scrollContainer.addEventListener('scroll', () => {
+      const bottomReached =
+        scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 100;
+
+      if (bottomReached && !isLoading && !allLoaded) {
+        loadSlots();
+      }
+    });
+    // window.addEventListener('scroll', () => {
+    //   const bottomReached = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+    //   if (bottomReached) loadSlots();
+    // });
+
+    function checkAndLoadIfShort() {
+      if (scrollContainer.scrollHeight <= scrollContainer.clientHeight + 50 && !allLoaded) {
+        loadSlots();
+      }
+    }
+</script>
 {% endblock %}

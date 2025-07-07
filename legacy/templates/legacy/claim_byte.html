@@ -87,22 +87,7 @@ Claim your Byte
      <span class="close">&times;</span>
     <div class="modal-content">
       <div class="slot-grid" id="slot-container">
-        {% for slot in all_slots %}
-          <button 
-            type="button"
-            class="slot-btn {% if slot.claimed %}taken{% else %}available{% endif %}"
-            {% if slot.claimed %}disabled{% endif %}
-            data-slot="{{ slot.slot_number }}"
-            style="font-weight: 100;"
-            data-price="{{ slot.price }}"
-          >
-            {{ slot.slot_number }}
-            <br>
-            {% if not slot.claimed %}
-              <span style="color: #2A9DF4; font-weight: bold;">₱{{ slot.price }}</span>
-            {% endif %}
-          </button>
-        {% endfor %}
+        <!-- JavaScript will populate this -->
       </div>
     </div>
   </div>
@@ -178,8 +163,7 @@ Claim your Byte
         <h3>GCash</h3>
         <h2>Name: Melanie M.</h2>
         <p>Account Number: 09951416582</p>
-      </div>
-      
+      </div>      
       <div class="upload-proof">
         <input type="file" name="payment_proof" id="id_payment_proof" class="form-control" accept="image/*" required>
         <label for="id_payment_proof" class="bol-custom-file-upload">Upload payment proof.</label>
@@ -187,10 +171,12 @@ Claim your Byte
           <img src="" alt="payment-proof-preview" class="bol-photo-card-actual" id="payment-proof-preview">
         </div>
       </div>
-    <div>
-      <button type="submit" class="bol-submit-button">Submit</button>
+      <div>
+        <button type="submit" class="bol-submit-button">Submit</button>
+      </div>
     </div>
   </form>
+</div>
   {% if messages %}
     <div class="alert-container">
       {% for message in messages %}
@@ -200,8 +186,6 @@ Claim your Byte
       {% endfor %}
     </div>
   {% endif %}
-  </div>
-
 <script>
   // Icon preview 
   const fileInput = document.getElementById('id_icon');
@@ -353,19 +337,6 @@ Claim your Byte
 
   const priceMap = {};
 
-  document.querySelectorAll('.slot-btn').forEach(button => {
-    const slot = button.getAttribute('data-slot');
-    const price = button.getAttribute('data-price');
-    priceMap[slot] = price;
-
-    button.addEventListener('click', () => {
-      slotField.value = slot;
-      priceIndicator.innerHTML = "₱" + price + " only.";
-      payment_amount_holder.value = price;
-      modal.style.display = "none";
-    });
-  });
-
   window.addEventListener("load", () => {
     const currentSlot = slotField.value;
     if (priceMap[currentSlot]) {
@@ -381,5 +352,122 @@ Claim your Byte
       modal.style.display = "none";
     }
   }
+</script>
+
+<script>
+  const container = document.getElementById('slot-container');
+  let offset = 0;
+  const limit = 300;
+  let isLoading = false;
+  let allLoaded = false; // Optional: Set to true when no more data is available
+  
+  function loadSlots() {
+    if (isLoading || allLoaded) return;
+    isLoading = true;
+
+    fetch(`/slots/chunk/?offset=${offset}&limit=${limit}`)
+      .then(response => response.json())
+      .then(data => {
+        data.slots.forEach(slot => {
+          // Track prices for later reference
+          priceMap[slot.slot_number] = slot.price;
+
+          // Append each rendered button
+          container.appendChild(renderSlotButton(slot));
+        });
+
+        if (data.slots.length < limit) {
+          allLoaded = true;
+        }
+
+        offset += limit;
+
+        // Check and restore prefilled slot value only after first chunk
+        if (offset === limit) {
+          const currentSlot = slotField.value;
+          if (priceMap[currentSlot]) {
+            payment_amount_holder.value = priceMap[currentSlot];
+            priceIndicator.innerHTML = `₱${priceMap[currentSlot]} only.`;
+          }
+        }
+
+        checkAndLoadIfShort();
+      })
+      .catch(error => {
+        console.error("Failed to load slots:", error);
+      })
+      .finally(() => {
+        isLoading = false;
+      });
+  }
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadSlots();
+      checkAndLoadIfShort();
+    });
+
+    // claim_byte.html slot button rendering
+    function renderSlotButton(slot) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = `slot-btn ${slot.claimed ? 'taken' : 'available'}`;
+      button.dataset.slot = slot.slot_number;
+      button.dataset.price = slot.price;
+      button.style.fontWeight = '100';
+
+      // Disable if slot is already taken
+      if (slot.claimed) {
+        button.disabled = true;
+      }
+
+      // Set the button's inner HTML
+      button.innerHTML = `${slot.slot_number}
+        <br>
+        ${!slot.claimed ? `<span style="color: #2A9DF4; font-weight: bold;">₱${slot.price}</span>` : ''}`;
+
+      // ✅ Attach click handler directly here
+      button.addEventListener('click', () => {
+        const slotField = document.getElementById('id_slot_number');
+        const priceIndicator = document.getElementById('price-indicator');
+        const paymentAmountHolder = document.getElementById('id_payment_amount');
+        const modal = document.getElementById('myModal');
+
+        slotField.value = slot.slot_number;
+        priceIndicator.innerHTML = `₱${slot.price} only.`;
+        paymentAmountHolder.value = slot.price;
+
+        modal.style.display = "none";
+      });
+
+      return button;
+    }
+
+    // // Infinite scroll
+    const scrollContainer = document.querySelector('#myModal .modal-content');
+
+    scrollContainer.addEventListener('scroll', () => {
+      const bottomReached =
+        scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 100;
+
+      if (bottomReached && !isLoading && !allLoaded) {
+        loadSlots();
+      }
+    });
+
+    scrollContainer.addEventListener('click', () => {
+      const bottomReached =
+        scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 100;
+
+      if (bottomReached && !isLoading && !allLoaded) {
+        loadSlots();
+      }
+    });
+
+    function checkAndLoadIfShort() {
+      if (scrollContainer.scrollHeight <= scrollContainer.clientHeight + 50 && !allLoaded) {
+        loadSlots();
+      }
+    }
 </script>
 {% endblock %}

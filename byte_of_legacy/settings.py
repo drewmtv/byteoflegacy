@@ -67,6 +67,14 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+#Media
+
+# Where files will be stored locally (on your server disk)
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# The URL that serves the files inside MEDIA_ROOT
+MEDIA_URL = '/media/'
+
 
 # Application definition
 
