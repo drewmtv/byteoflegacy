@@ -17,7 +17,7 @@ a {
 }
 
 .bol-container {
-  width: 75%;
+  width: 98%;
   margin: auto;
   
 }
@@ -461,15 +461,30 @@ a {
   background-color: #e0f0ff;
   color: #0366d6;
 }
+
 .alert.success {
   background-color: #e6ffed;
   color: #1a7f37;
 }
+
 .alert.warning {
   background-color: #fff4d1;
   color: #b36b00;
 }
+
 .alert.error {
   background-color: #ffe4e4;
   color: #b00020;
+}
+
+/* # Slot Verificator */
+
+/* Style for verified slots */
+.bol-slot-verified {
+    background-color: #28a745;  /* Green color for verified slots */
+    color: white;
+}
+
+.bol-slot-verified td {
+    color: white;  /* Ensure the text stays white */
 }

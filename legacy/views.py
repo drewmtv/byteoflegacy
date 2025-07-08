@@ -5,12 +5,24 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.core.cache import cache
 from django.http import HttpResponseRedirect
+from urllib.parse import unquote # from django.utils.http import urlunquote REPLACED //
+
+
+# Authentication
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Slot
 from .forms import SlotForm
 from .utils import upload_to_supabase_media, upload_to_supabase_confidential
 from .helpers import get_all_slots_with_status  # assuming you have this utility
 from .validators import validate_image_file
+
+import os
+import environ
+
+env = environ.Env()
 
 # Homepage – shows the mosaic wall
 def index(request):
@@ -120,6 +132,103 @@ def claim_byte(request, slot=None):
 # Success confirmation page
 def claim_success(request):
     return render(request, "legacy/claim_success.html")
+
+# Mobile Admin Login View
+def mobile_admin(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        # Authenticate the user
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)  # Log the user in
+            return redirect('legacy:mobile-admin-dashboard')  # Redirect to dashboard
+        else:
+            messages.error(request, "Invalid credentials.")  # Show error message if credentials are wrong
+    
+    return render(request, 'legacy/mobile-admin/mobile-admin-login.html')  # Render login page if GET request
+
+# Mobile Logout View
+def mobile_admin_logout(request):
+    logout(request)
+    return redirect('legacy:mobile-admin-login')  # Redirect to login page
+
+# Mobile Admin Dashboard View (Protected by Login)
+@login_required(login_url='legacy:mobile-admin-login')  # Redirect to login if not logged in
+def mobile_admin_dashboard(request):
+    # Your logic for rendering the admin dashboard
+    return render(request, 'legacy/mobile-admin/mobile-admin-dashboard.html')
+
+@csrf_exempt
+def update_admin_remarks(request):
+    if request.method == 'POST':
+        slot_id = request.POST.get('slot_id')
+        admin_remarks = request.POST.get('admin_remarks')
+        reference_number = request.POST.get('reference_number', '')  # New field for reference number
+
+        # Get the Slot object
+        slot = Slot.objects.get(id=slot_id)
+
+        # Update the admin remarks and reference number
+        slot.admin_remarks = admin_remarks
+        slot.payment_reference_number = reference_number
+        slot.save()
+
+        return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'fail'})
+
+def get_updated_slots(request):
+    # Retrieve all slots or filter them based on your logic
+    slots = Slot.objects.all().values(
+        'id',  # Add ID to identify each slot in the front end
+        'slot_number', 
+        'name', 
+        'payment_amount', 
+        'verified', 
+        'payment_proof',  
+        'claimed_date', 
+        'admin_remarks', 
+        'payment_reference_number'  # Add the reference number to the response
+    )
+
+    # Return the slot data as JSON
+    return JsonResponse({'slots': list(slots)})
+
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
+
+@login_required(login_url='legacy:mobile-admin-login')
+def fetch_proof_image(request, image_path):
+    """
+    Securely fetch a private Supabase image for admins only.
+    """
+    SUPABASE_URL = os.environ.get('Supabase_URL')
+    SUPABASE_KEY = os.environ.get('Supabase_SERVICE_KEY')
+    SUPABASE_BUCKET = os.environ.get('Supabase_STORAGE_BUCKET_CONFIDENTIAL')
+
+    # Decode URL encoding if passed in path
+    image_path = unquote(image_path)
+
+    # Prevent path traversal
+    if '..' in image_path or image_path.startswith('/'):
+        raise Http404("Invalid path.")
+
+    file_url = f"{SUPABASE_URL}/storage/v1/object/{SUPABASE_BUCKET}/{image_path}"
+
+    headers = {
+        "Authorization": f"Bearer {SUPABASE_KEY}"
+    }
+
+    response = requests.get(file_url, headers=headers)
+
+    if response.status_code == 200:
+        content_type = response.headers.get("Content-Type", "application/octet-stream")
+        return HttpResponse(response.content, content_type=content_type)
+    else:
+        raise Http404("Image not found or access denied.")
 
 def page_not_found(request, exception):
     # Redirect to the homepage or any other page
