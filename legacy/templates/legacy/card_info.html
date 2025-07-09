@@ -26,6 +26,16 @@
     <div>
         {{ slot.message }}
     </div>
+    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+    target="_blank" 
+    rel="noopener noreferrer">
+    Share on Facebook
+    </a>
+    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this Byte of Legacy slot for {{ slot.name }}" 
+    target="_blank"
+    rel="noopener noreferrer">
+    Share on Twitter
+    </a>
     <div>
         {% if slot.link %}
             <a href="{{ slot.link }}" target="_blank" rel="noopener noreferrer" style="background-color: {{ slot.back_bg_color}}; color: {{ slot.back_text_color }};">Learn more about {{ slot.name }}</a>
