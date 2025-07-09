@@ -46,6 +46,13 @@ if DEBUG:
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+    #Media
+
+    # Where files will be stored locally (on your server disk)
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+    # The URL that serves the files inside MEDIA_ROOT
+    MEDIA_URL = '/media/'
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'    
     Current_DB = {
@@ -67,13 +74,6 @@ EMAIL_HOST_USER = env('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-#Media
-
-# Where files will be stored locally (on your server disk)
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# The URL that serves the files inside MEDIA_ROOT
-MEDIA_URL = '/media/'
 
 
 # Application definition

@@ -21,11 +21,12 @@ class Slot(models.Model):
     payment_amount = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
     verified = models.BooleanField(default=False)
 
-    # Metadata
-    created_at = models.DateTimeField(auto_now_add=True)
-
     # Email
     email = models.EmailField(blank=True, null=True)
+
+    # Admin Handling
+    admin_remarks = models.TextField(max_length=500, blank=True, null=True)
+    claimed_date = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
         return f"Slot {self.slot_number} - {'✔' if self.verified else '❌'} {self.name}"

@@ -17,7 +17,12 @@ urlpatterns = [
     path('claim/', views.claim_byte, name='claim'),
     path('claim/<int:slot>/', views.claim_byte, name='claim'),
     path('success/', views.claim_success, name='success'),
-    # path('404/', page_not_found),
+    path('mobile-admin/', views.mobile_admin, name='mobile-admin-login'),
+    path('mobile-admin/dashboard/', views.mobile_admin_dashboard, name='mobile-admin-dashboard'),
+    path('mobile-admin/logout/', views.mobile_admin_logout, name='mobile-admin-logout'),
+    path('ajax/get-updated-slots/', views.get_updated_slots, name='get_updated_slots'),
+    path('update-admin-remarks/', views.update_admin_remarks, name='update_admin_remarks'),
+    path('admin/proof/<path:image_path>/', views.fetch_proof_image, name='fetch_proof_image'),
 ]
 
 if settings.DEBUG:

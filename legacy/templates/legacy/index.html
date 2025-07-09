@@ -13,7 +13,7 @@
 <script>
   const container = document.getElementById('slot-container');
   let offset = 0;
-  const limit = 20;
+  const limit = 30;
   let isLoading = false;
   let allLoaded = false; // Optional: Set to true when no more data is available
   
@@ -26,7 +26,6 @@
       .then(data => {
         data.slots.forEach(slot => {
           container.appendChild(renderSlotCard(slot));
-          console.log(slot.slot_number + ": " + slot.verified);
         });
 
         if (data.slots.length < limit) {
@@ -79,8 +78,10 @@
           } else {
           div.innerHTML = `
               <div class="bol-card-pending">
-              <h1>Pending</h1>
-              <small>Slot #: ${slot.slot_number}</small>
+                <div class="bol-card-pending-middle">
+                  <div style="font-weight: bold;">Pending</div>
+                  <div class="class-number">Slot #: ${slot.slot_number}</div>
+                </div>
               </div>
           `;
           }
@@ -88,11 +89,11 @@
           div.innerHTML = `
           <a href="/claim/${slot.slot_number}/">
               <div class="bol-card-empty">
-              <p class="bol-available">Available</p>
-              <small>Slot #: ${slot.slot_number}</small>
-              <button style="padding: 2px 5px; display: block; margin: 20px auto auto auto;">
-                  Claim this Byte for ₱${slot.price}
-              </button>
+                <div class="bol-available">Available</div>
+                <div class="class-number">Slot #: ${slot.slot_number}</div>
+                <button style="display: block; margin: auto;">
+                    Claim for ₱${slot.price}
+                </button>
               </div>
           </a>
           `;

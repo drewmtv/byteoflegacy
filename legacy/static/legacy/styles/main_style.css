@@ -17,7 +17,7 @@ a {
 }
 
 .bol-container {
-  width: 75%;
+  width: 98%;
   margin: auto;
   
 }
@@ -103,11 +103,15 @@ a {
 /* card styles */
 .bol-legacy-card {
   aspect-ratio: 1.586;
-  border-radius: 12px;
-  background-color: #00000031;
-  overflow: hidden;
+  /* border-radius: 12px; */
+  background-color: #00000073;
+  /* overflow: hidden; */
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   perspective: 1000px;
+}
+
+.bol-legacy-card a {
+  text-shadow: 2px 2px 4px white;
 }
 
 .bol-card-flip-inner {
@@ -128,7 +132,7 @@ a {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   position: absolute;
-  border-radius: 12px;
+  /* border-radius: 12px; */
 }
 
 .bol-front-card {
@@ -149,7 +153,7 @@ a {
   border-radius: 12px;
   overflow: hidden;
   width: 75%;
-  margin: 10px auto auto auto;
+  margin: auto;
 }
 
 .bol-photo-card-actual {
@@ -180,7 +184,7 @@ a {
 .bol-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 5px;
+  /* gap: 5px; */
   padding: 20px;
   justify-content: center;
   align-items: center;
@@ -195,13 +199,22 @@ a {
   font-weight: bold;
 }
 
-.bol-available {
-  font-size: 1.25em;
+.bol-card-empty * {
+  margin: 3px 0;
 }
 
 .bol-card-pending {
-  text-align: center;
+  height: 100%;
   background-color: yellow;
+  position: relative;
+  text-align: center;
+}
+
+.bol-card-pending-middle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* claim card form styles */
@@ -379,13 +392,32 @@ a {
 }
 
 @media (max-width: 768px) {
+  .bol-card-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .bol-back-card-message p {
+    font-size: 0.75rem;
+  }
+
+  .bol-card-empty .class-number, .bol-card-empty button {
+    font-size: 0.7rem;
+  }
+
+  .bol-available {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: green;
+    text-shadow: 2px 2px 4px white;
+  }
+
   .bol-custom-file-upload, .bol-submit-button {
     display: inline-block;
     padding: 5px 10px;
     cursor: pointer;
     background-color: #4CAF50;
     color: white;
-    border-radius: 12px;
+    /* border-radius: 12px; */
     font-family: sans-serif;
     font-size: 0.5em;
     transition: background-color 0.3s ease;
@@ -400,7 +432,7 @@ a {
   }
 
   .bol-container {
-    width: 85%;
+    width: 95%;
   }
 
   .bol-navbar {
@@ -461,15 +493,30 @@ a {
   background-color: #e0f0ff;
   color: #0366d6;
 }
+
 .alert.success {
   background-color: #e6ffed;
   color: #1a7f37;
 }
+
 .alert.warning {
   background-color: #fff4d1;
   color: #b36b00;
 }
+
 .alert.error {
   background-color: #ffe4e4;
   color: #b00020;
+}
+
+/* # Slot Verificator */
+
+/* Style for verified slots */
+.bol-slot-verified {
+    background-color: #28a745;  /* Green color for verified slots */
+    color: white;
+}
+
+.bol-slot-verified td {
+    color: white;  /* Ensure the text stays white */
 }

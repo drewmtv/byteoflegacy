@@ -4,8 +4,6 @@ from django.conf import settings
 
 env = environ.Env()
 
-LOCAL_MEDIA_ROOT = env('LOCAL_MEDIA_ROOT', default='media/')  # Always define
-
 if not settings.DEBUG:
     import requests
     SUPABASE_URL = env('Supabase_URL')
@@ -34,21 +32,23 @@ def upload_to_supabase(file, path_in_bucket, destination):
     else:
         raise Exception(f"Upload failed: {response.content.decode()}")
 
-def save_file_locally(file, relative_path):
-    """
-    Save uploaded file to local filesystem during development.
-    """
-    full_path = os.path.join(LOCAL_MEDIA_ROOT, relative_path)
+if settings.DEBUG:
+    LOCAL_MEDIA_ROOT = env('LOCAL_MEDIA_ROOT', default='media/')  # Always define
+    def save_file_locally(file, relative_path):
+        """
+        Save uploaded file to local filesystem during development.
+        """
+        full_path = os.path.join(LOCAL_MEDIA_ROOT, relative_path)
 
-    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+        os.makedirs(os.path.dirname(full_path), exist_ok=True)
 
-    with open(full_path, 'wb+') as destination:
-        for chunk in file.chunks():
-            destination.write(chunk)
+        with open(full_path, 'wb+') as destination:
+            for chunk in file.chunks():
+                destination.write(chunk)
 
-    # Use MEDIA_URL from settings to build URL path
-    media_url = getattr(settings, 'MEDIA_URL', '/media/')
-    return f"{media_url}{relative_path}"
+        # Use MEDIA_URL from settings to build URL path
+        media_url = getattr(settings, 'MEDIA_URL', '/media/')
+        return f"{media_url}{relative_path}"
 
 def upload_to_supabase_media(file, path_in_bucket, destination=None):
     if settings.DEBUG:

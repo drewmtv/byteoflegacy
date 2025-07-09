@@ -1,0 +1,156 @@
+{% extends 'legacy/layout.html' %}
+
+{% block extra_heads %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block title %}
+Admin Dashboard | Bytes of Legacy
+{% endblock %}
+
+{% block content %}
+<!-- Logout form -->
+<form method="POST" action="{% url 'legacy:mobile-admin-logout' %}">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+
+<!-- Slot Table -->
+<table id="slots-table" class="admin-dashboard">
+    <thead>
+        <tr>
+            <th>Slot Number</th>
+            <th>Name</th>
+            <th>Payment Amount</th>
+            <th>Claimed Date</th>
+            <th>Admin Remarks</th>
+            <th>Reference Number</th>
+            <th>Payment Proof</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="slots-container"></tbody>
+</table>
+
+<!-- Messages -->
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Admin Remarks Modal -->
+<div id="admin-remarks-modal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Update Admin Remarks</h2>
+        <form id="admin-remarks-form">
+            <textarea name="admin_remarks" id="admin_remarks" rows="4" cols="50"></textarea><br>
+            <button type="submit">Save Remarks</button>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    let selectedSlotId = null;
+
+    function fetchUpdatedSlots() {
+        $.ajax({
+            url: '{% url "legacy:get_updated_slots" %}',
+            method: 'GET',
+            success: function(response) {
+                $('#slots-container').empty();
+
+                response.slots.forEach(function(slot) {
+                    const verifiedClass = slot.verified ? 'bol-slot-verified' : '';
+
+                    const proofUrl = slot.payment_proof_path
+                        ? `{% url 'legacy:fetch_proof_image' 'REPLACE_ME' %}`.replace('REPLACE_ME', encodeURIComponent(slot.payment_proof_path))
+                        : '/static/default-placeholder.png';
+
+                    $('#slots-container').append(`
+                        <tr class="${verifiedClass}">
+                            <td>${slot.slot_number}</td>
+                            <td>${slot.name}</td>
+                            <td>${slot.payment_amount}</td>
+                            <td>${slot.claimed_date || 'Not Claimed'}</td>
+                            <td>${slot.admin_remarks || 'N/A'}</td>
+                            <td><input type="text" name="reference_number" id="reference_number_${slot.id}" placeholder="Enter Reference Number" value="${slot.payment_reference_number || ''}" /></td>
+                            <td>
+                                <img src="${proofUrl}" class="payment-proof-thumbnail" data-full-image="${proofUrl}" alt="Payment Proof" width="50" />
+                            </td>
+                            <td>
+                                <button class="edit-remarks-btn" data-slot-id="${slot.id}" data-slot-remarks="${slot.admin_remarks || ''}">Edit Remarks</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+
+                // Attach button handlers
+                $('.edit-remarks-btn').click(function() {
+                    selectedSlotId = $(this).data('slot-id');
+                    const remarks = $(this).data('slot-remarks') || '';
+                    $('#admin_remarks').val(remarks);
+                    $('#admin-remarks-modal').show();
+                });
+
+                $('.payment-proof-thumbnail').click(function() {
+                    const fullImage = $(this).data('full-image');
+                    openImageModal(fullImage);
+                });
+            },
+            error: function() {
+                alert('Error fetching slots.');
+            }
+        });
+    }
+
+    $('#admin-remarks-modal .close').click(function() {
+        $('#admin-remarks-modal').hide();
+    });
+
+    $('#admin-remarks-form').submit(function(e) {
+        e.preventDefault();
+        const remarks = $('#admin_remarks').val();
+
+        $.ajax({
+            url: '{% url "legacy:update_admin_remarks" %}',
+            method: 'POST',
+            data: {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                slot_id: selectedSlotId,
+                admin_remarks: remarks,
+            },
+            success: function() {
+                alert('Remarks updated.');
+                $('#admin-remarks-modal').hide();
+                fetchUpdatedSlots();
+            },
+            error: function() {
+                alert('Failed to update remarks.');
+            }
+        });
+    });
+
+    function openImageModal(imageUrl) {
+        const modal = document.createElement('div');
+        modal.className = 'image-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <img src="${imageUrl}" alt="Payment Proof" style="width: 100%;" />
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        modal.querySelector('.close').onclick = function() {
+            document.body.removeChild(modal);
+        };
+    }
+
+    setInterval(fetchUpdatedSlots, 5000);
+    fetchUpdatedSlots();
+</script>
+{% endblock %}
