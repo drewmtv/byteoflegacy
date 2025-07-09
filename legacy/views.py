@@ -5,8 +5,8 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.core.cache import cache
 from django.http import HttpResponseRedirect
+from django.conf import settings
 from urllib.parse import unquote # from django.utils.http import urlunquote REPLACED //
-
 
 # Authentication
 from django.contrib.auth import authenticate, login, logout
@@ -32,6 +32,22 @@ def index(request):
 # About page
 def about(request):
     return render(request, 'legacy/about.html')
+
+def card_info_link(request, slot, name):
+    filtered_slot = Slot.objects.filter(slot_number=slot).values('slot_number', 'name', 'icon', 'front_bg_color', 'front_text_color', 'message', 'link', 'back_bg_color', 'back_text_color').first()
+
+    if filtered_slot is None:
+        return redirect("legacy:index")
+
+    if settings.DEBUG:
+        absolute_icon = request.build_absolute_uri(filtered_slot['icon'])
+    else:
+        absolute_icon = filtered_slot['icon']
+
+    return render(request, "legacy/card_info.html", {
+        "slot": filtered_slot,
+        "absolute_icon": absolute_icon,
+    })
 
 # New chunk view for AJAX requests
 def slot_chunk_view(request):

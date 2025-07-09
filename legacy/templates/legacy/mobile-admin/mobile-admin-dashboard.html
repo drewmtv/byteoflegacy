@@ -1,160 +1,191 @@
 {% extends 'legacy/layout.html' %}
 
 {% block extra_heads %}
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    .admin-slot-card {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+      background-color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .admin-slot-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.1em;
+    }
+    .admin-slot-verified {
+      border-left: 4px solid #2ecc71;
+    }
+    .admin-slot-pending {
+      border-left: 4px solid #e67e22;
+    }
+    .admin-slot-card img {
+      max-width: 100%;
+      max-height: 200px;
+      margin-top: 10px;
+    }
+    @media(min-width: 768px) {
+      .admin-slot-card {
+        display: none;
+      }
+      table.admin-dashboard {
+        display: table;
+        width: 100%;
+      }
+    }
+
+    @media(max-width: 767px) {
+      table.admin-dashboard {
+        display: none;
+      }
+      .admin-slot-card {
+        display: block;
+      }
+    }
+  </style>
 {% endblock %}
 
-{% block title %}
-Admin Dashboard | Bytes of Legacy
-{% endblock %}
+{% block title %}Admin Dashboard | Bytes of Legacy{% endblock %}
 
 {% block content %}
-<!-- Logout form -->
-<form method="POST" action="{% url 'legacy:mobile-admin-logout' %}">
+  <form method="POST" action="{% url 'legacy:mobile-admin-logout' %}">
     {% csrf_token %}
     <button type="submit">Logout</button>
-</form>
+  </form>
 
-<!-- Slot Table -->
-<table id="slots-table" class="admin-dashboard">
+  <table id="slots-table" class="admin-dashboard">
     <thead>
-        <tr>
-            <th>Slot Number</th>
-            <th>Name</th>
-            <th>Payment Amount</th>
-            <th>Claimed Date</th>
-            <th>Admin Remarks</th>
-            <th>Reference Number</th>
-            <th>Payment Proof</th>
-            <th>Action</th>
-        </tr>
+      <tr>
+        <th>Slot Number</th>
+        <th>Name</th>
+        <th>Payment Amount</th>
+        <th>Claimed Date</th>
+        <th>Admin Remarks</th>
+        <th>Reference Number</th>
+        <th>Payment Proof</th>
+        <th>Action</th>
+      </tr>
     </thead>
-    <tbody id="slots-container"></tbody>
-</table>
+    <tbody id="slots-container">
+      <!-- Desktop version rows -->
+    </tbody>
+  </table>
 
-<!-- Messages -->
-{% if messages %}
-<div class="messages">
-    {% for message in messages %}
-        <p>{{ message }}</p>
-    {% endfor %}
-</div>
-{% endif %}
+  <div id="mobile-slots-container">
+    <!-- Mobile version cards -->
+  </div>
 
-<!-- Admin Remarks Modal -->
-<div id="admin-remarks-modal" class="modal" style="display:none;">
+  <!-- Modal for remarks -->
+  <div id="admin-remarks-modal" class="modal" style="display:none;">
     <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Update Admin Remarks</h2>
-        <form id="admin-remarks-form">
-            <textarea name="admin_remarks" id="admin_remarks" rows="4" cols="50"></textarea><br>
-            <button type="submit">Save Remarks</button>
-        </form>
+      <span class="close">&times;</span>
+      <h2>Update Admin Remarks</h2>
+      <form id="admin-remarks-form">
+        <textarea name="admin_remarks" id="admin_remarks" rows="4" cols="50"></textarea><br>
+        <button type="submit">Save Remarks</button>
+      </form>
     </div>
-</div>
+  </div>
 
-<script type="text/javascript">
+  <script>
     let selectedSlotId = null;
 
     function fetchUpdatedSlots() {
-        $.ajax({
-            url: '{% url "legacy:get_updated_slots" %}',
-            method: 'GET',
-            success: function(response) {
-                $('#slots-container').empty();
+      $.ajax({
+        url: '{% url "legacy:get_updated_slots" %}',
+        method: 'GET',
+        success: function(response) {
+          $('#slots-container').empty();
+          $('#mobile-slots-container').empty();
 
-                response.slots.forEach(function(slot) {
-                    const verifiedClass = slot.verified ? 'bol-slot-verified' : '';
+          response.slots.forEach(function(slot) {
+            let verifiedClass = slot.verified ? 'admin-slot-verified' : 'admin-slot-pending';
+            let proofUrl = `/proxy-payment-proof/?url=${encodeURIComponent(slot.payment_proof)}`;
 
-                    const proofUrl = slot.payment_proof_path
-                        ? `{% url 'legacy:fetch_proof_image' 'REPLACE_ME' %}`.replace('REPLACE_ME', encodeURIComponent(slot.payment_proof_path))
-                        : '/static/default-placeholder.png';
+            // Desktop row
+            $('#slots-container').append(`
+              <tr class="${verifiedClass}">
+                <td>${slot.slot_number}</td>
+                <td>${slot.name}</td>
+                <td>${slot.payment_amount}</td>
+                <td>${slot.claimed_date || 'Not Claimed'}</td>
+                <td>${slot.admin_remarks || 'N/A'}</td>
+                <td><input type="text" id="reference_number_${slot.id}" value="${slot.payment_reference_number || ''}" /></td>
+                <td><img src="${proofUrl}" class="payment-proof-thumbnail" data-full-image="${proofUrl}" width="50"/></td>
+                <td><button class="edit-remarks-btn" data-slot-id="${slot.id}" data-remarks="${slot.admin_remarks || ''}">Edit</button></td>
+              </tr>
+            `);
 
-                    $('#slots-container').append(`
-                        <tr class="${verifiedClass}">
-                            <td>${slot.slot_number}</td>
-                            <td>${slot.name}</td>
-                            <td>${slot.payment_amount}</td>
-                            <td>${slot.claimed_date || 'Not Claimed'}</td>
-                            <td>${slot.admin_remarks || 'N/A'}</td>
-                            <td><input type="text" name="reference_number" id="reference_number_${slot.id}" placeholder="Enter Reference Number" value="${slot.payment_reference_number || ''}" /></td>
-                            <td>
-                                <img src="${proofUrl}" class="payment-proof-thumbnail" data-full-image="${proofUrl}" alt="Payment Proof" width="50" />
-                            </td>
-                            <td>
-                                <button class="edit-remarks-btn" data-slot-id="${slot.id}" data-slot-remarks="${slot.admin_remarks || ''}">Edit Remarks</button>
-                            </td>
-                        </tr>
-                    `);
-                });
+            // Mobile card
+            $('#mobile-slots-container').append(`
+              <div class="admin-slot-card ${verifiedClass}">
+                <h3>Slot #${slot.slot_number}</h3>
+                <p><strong>Name:</strong> ${slot.name}</p>
+                <p><strong>Amount:</strong> ${slot.payment_amount}</p>
+                <p><strong>Claimed:</strong> ${slot.claimed_date || 'Not Claimed'}</p>
+                <p><strong>Remarks:</strong> ${slot.admin_remarks || 'N/A'}</p>
+                <p><strong>Reference:</strong> ${slot.payment_reference_number || ''}</p>
+                <img src="${proofUrl}" data-full-image="${proofUrl}" class="payment-proof-thumbnail" />
+                <button class="edit-remarks-btn" data-slot-id="${slot.id}" data-remarks="${slot.admin_remarks || ''}">Edit Remarks</button>
+              </div>
+            `);
+          });
 
-                // Attach button handlers
-                $('.edit-remarks-btn').click(function() {
-                    selectedSlotId = $(this).data('slot-id');
-                    const remarks = $(this).data('slot-remarks') || '';
-                    $('#admin_remarks').val(remarks);
-                    $('#admin-remarks-modal').show();
-                });
+          // Remarks click
+          $('.edit-remarks-btn').click(function() {
+            selectedSlotId = $(this).data('slot-id');
+            $('#admin_remarks').val($(this).data('remarks') || '');
+            $('#admin-remarks-modal').show();
+          });
 
-                $('.payment-proof-thumbnail').click(function() {
-                    const fullImage = $(this).data('full-image');
-                    openImageModal(fullImage);
-                });
-            },
-            error: function() {
-                alert('Error fetching slots.');
-            }
-        });
+          // Full image modal
+          $('.payment-proof-thumbnail').click(function() {
+            openImageModal($(this).data('full-image'));
+          });
+        },
+        error: function() {
+          alert('Error fetching data.');
+        }
+      });
     }
-
-    $('#admin-remarks-modal .close').click(function() {
-        $('#admin-remarks-modal').hide();
-    });
 
     $('#admin-remarks-form').submit(function(e) {
-        e.preventDefault();
-        const remarks = $('#admin_remarks').val();
-
-        $.ajax({
-            url: '{% url "legacy:update_admin_remarks" %}',
-            method: 'POST',
-            data: {
-                csrfmiddlewaretoken: '{{ csrf_token }}',
-                slot_id: selectedSlotId,
-                admin_remarks: remarks,
-            },
-            success: function() {
-                alert('Remarks updated.');
-                $('#admin-remarks-modal').hide();
-                fetchUpdatedSlots();
-            },
-            error: function() {
-                alert('Failed to update remarks.');
-            }
-        });
+      e.preventDefault();
+      $.ajax({
+        url: '{% url "legacy:update_admin_remarks" %}',
+        method: 'POST',
+        data: {
+          csrfmiddlewaretoken: '{{ csrf_token }}',
+          slot_id: selectedSlotId,
+          admin_remarks: $('#admin_remarks').val()
+        },
+        success: function() {
+          $('#admin-remarks-modal').hide();
+          fetchUpdatedSlots();
+        }
+      });
     });
 
-    function openImageModal(imageUrl) {
-        const modal = document.createElement('div');
-        modal.className = 'image-modal';
-        modal.innerHTML = `
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <img src="${imageUrl}" alt="Payment Proof" style="width: 100%;" />
-            </div>
-        `;
-        document.body.appendChild(modal);
+    $('.modal .close').click(function() {
+      $(this).closest('.modal').hide();
+    });
 
-        modal.querySelector('.close').onclick = function() {
-            document.body.removeChild(modal);
-        };
+    function openImageModal(url) {
+      const modal = document.createElement('div');
+      modal.className = 'image-modal';
+      modal.innerHTML = `
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <img src="${url}" style="width: 100%;" />
+        </div>
+      `;
+      document.body.appendChild(modal);
+      modal.querySelector('.close').onclick = () => document.body.removeChild(modal);
     }
 
-    setInterval(fetchUpdatedSlots, 5000);
     fetchUpdatedSlots();
-</script>
-<<<<<<< HEAD
+    setInterval(fetchUpdatedSlots, 5000);
+  </script>
 {% endblock %}
-=======
-{% endblock %}
->>>>>>> 616ab65e781005d777b0274d1a445d5d155bf02d

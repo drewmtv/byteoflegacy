@@ -1,0 +1,35 @@
+{% extends 'legacy/layout.html' %}
+
+{% block title %}
+{{ slot.name }} - Slot #:{{ slot.slot_number }} on Byte of Legacy
+{% endblock %}
+
+{% block extra_heads %}
+  <meta property="og:title" content="{{ slot.name }} - Slot #:{{ slot.slot_number }} on Byte of Legacy" />
+  <meta property="og:description" content="This is a byte of legacy of {{ slot.name }} with slot #{{ slot.slot_number }}" />
+  <meta property="og:image" content="{{ slot.icon }}" />
+  <meta property="og:url" content="{{ absolute_icon }}" />
+
+  <style>
+    .bol-container {
+        background-color: {{slot.front_bg_color}};
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="bol-main-content-container bol-body-content">
+    <div style="color: {{slot.front_text_color}}; aspect-ratio: 1.586;width: 50%;" class="bol-container">
+        <div>{{ slot.name }}</div>
+        <img src="{{ slot.icon }}" alt="{{slot.name}} | {{ slot.slot_number }}" style="width: 100%; height: 100%; object-fit: contain;">
+    </div>
+    <div>
+        {{ slot.message }}
+    </div>
+    <div>
+        {% if slot.link %}
+            <a href="{{ slot.link }}" target="_blank" rel="noopener noreferrer" style="background-color: {{ slot.back_bg_color}}; color: {{ slot.back_text_color }};">Learn more about {{ slot.name }}</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
