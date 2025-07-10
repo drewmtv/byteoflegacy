@@ -13,7 +13,7 @@
 <script>
   const container = document.getElementById('slot-container');
   let offset = 0;
-  const limit = 30;
+  const limit = 50;
   let isLoading = false;
   let allLoaded = false; // Optional: Set to true when no more data is available
   
@@ -53,11 +53,11 @@
     function renderSlotCard(slot) {
       const div = document.createElement('div');
       div.className = 'bol-legacy-card';
-      div.id = `#${slot.data?.name || ''}`;
+      div.id = `#${slot.name || ''}`;
 
       if (slot.claimed) {
           if (slot.verified) {
-          div.innerHTML = `<a href="/card-info/${slot.slot_number}/${slot.name}/">
+          div.innerHTML = `
               <div class="bol-card-flip-inner">
               <div class="bol-front-card" style="background-color: ${slot.front_bg_color}; color: ${slot.front_text_color};">
                   <div class="bol-photo-card">
@@ -69,12 +69,14 @@
               </div>
               <div class="bol-back-card" style="background-color: ${slot.back_bg_color}; color: ${slot.back_text_color};">
                   <div class="bol-back-card-message">
-                  <p>“${slot.message || ''}”</p>
+                  <a href="/card-info/${slot.slot_number}/${slot.name}/">
+                    <p>“${slot.message || ''}”</p>
+                  </a>
                   ${slot.link ? `<a href="${slot.link}" target="_blank">🔗</a>` : ''}
                   </div>
               </div>
               </div>
-              </a>
+              
           `;
           } else {
           div.innerHTML = `

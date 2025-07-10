@@ -54,7 +54,7 @@ class SlotForm(forms.ModelForm):
                 }),
             'link': forms.URLInput(attrs={
                 'class': 'form-control',
-                'placeholder': '(Optional): Your here...'
+                'placeholder': '(Optional): Your link...'
                 }),
             'back_bg_color': forms.TextInput(attrs={
                 'type': 'color', 
