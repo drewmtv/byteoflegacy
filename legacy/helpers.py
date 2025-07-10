@@ -12,9 +12,32 @@ def get_all_slots_with_status():
 
     all_slots = []
 
+    ICONIC_SLOTS_PRICING = {
+        77: 150,
+        88: 188,
+        99: 150,
+        111: 200,
+        143: 143,
+        187: 187,
+        404: 404,
+        666: 666,
+        777: 777,
+        888: 888,
+        911: 911,
+        1111: 500,
+        1234: 250,
+        14344: 500,
+        2020: 420,
+        2025: 250,
+        9999: 999,
+        20000: 2000,
+    }
+
     for i in range(1, total_slots + 1):
         # Pricing logic
-        if 1 <= i <= 50:
+        if i in ICONIC_SLOTS_PRICING:
+            price = ICONIC_SLOTS_PRICING[i]
+        elif 1 <= i <= 50:
             price = 100
         elif i % 69 == 0:
             price = 1
