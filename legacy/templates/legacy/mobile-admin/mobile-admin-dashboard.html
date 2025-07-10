@@ -16,8 +16,18 @@
       font-size: 1.1em;
     }
     .admin-slot-verified {
-      border-left: 4px solid #2ecc71;
+      background-color: #2ecc71;
+      border: 3px solid transparent;
     }
+
+    #slots-table {
+      border-spacing: 0;
+    }
+
+    /* table.admin-dashboard, .admin-slot-verified td, #slots-container {
+      border: none;
+    } */
+
     .admin-slot-pending {
       border-left: 4px solid #e67e22;
     }
@@ -50,28 +60,32 @@
 {% block title %}Admin Dashboard | Bytes of Legacy{% endblock %}
 
 {% block content %}
+  <div class="bol-body-title">
+    Admin Dashboard
+  </div>
   <form method="POST" action="{% url 'legacy:mobile-admin-logout' %}">
     {% csrf_token %}
     <button type="submit">Logout</button>
   </form>
-
-  <table id="slots-table" class="admin-dashboard">
-    <thead>
-      <tr>
-        <th>Slot Number</th>
-        <th>Name</th>
-        <th>Payment Amount</th>
-        <th>Claimed Date</th>
-        <th>Admin Remarks</th>
-        <th>Reference Number</th>
-        <th>Payment Proof</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody id="slots-container">
-      <!-- Desktop version rows -->
-    </tbody>
-  </table>
+  <div class="bol-body-content">
+    <table id="slots-table" class="admin-dashboard">
+      <thead>
+        <tr>
+          <th>Slot Number</th>
+          <th>Name</th>
+          <th>Payment Amount</th>
+          <th>Claimed Date</th>
+          <th>Admin Remarks</th>
+          <th>Reference Number</th>
+          <th>Payment Proof</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="slots-container">
+        <!-- Desktop version rows -->
+      </tbody>
+    </table>
+  </div>  
 
   <div id="mobile-slots-container">
     <!-- Mobile version cards -->
@@ -186,6 +200,6 @@
     }
 
     fetchUpdatedSlots();
-    setInterval(fetchUpdatedSlots, 5000);
+    setInterval(fetchUpdatedSlots, 60000);
   </script>
 {% endblock %}

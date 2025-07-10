@@ -198,7 +198,7 @@ def update_admin_remarks(request):
 
 def get_updated_slots(request):
     # Retrieve all slots or filter them based on your logic
-    slots = Slot.objects.all().values(
+    slots = Slot.objects.all().order_by("-claimed_date").values(
         'id',  # Add ID to identify each slot in the front end
         'slot_number', 
         'name', 
