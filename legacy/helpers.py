@@ -14,7 +14,7 @@ def get_all_slots_with_status():
 
     for i in range(1, total_slots + 1):
         # Pricing logic
-        if 1 <= i <= 20:
+        if 1 <= i <= 50:
             price = 100
         elif i % 69 == 0:
             price = 1
