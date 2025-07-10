@@ -110,7 +110,7 @@ a {
   perspective: 1000px;
 }
 
-.bol-legacy-card a {
+.bol-legacy-card a, textarea[name="message"] {
   text-shadow: 2px 2px 4px white;
 }
 
@@ -262,6 +262,10 @@ a {
   font-size: 1em;
 }
 
+#id_message {
+  font-size: 1.5rem;
+}
+
 .bol-back-card-form {
   height: 100%;
   width: 100%;
@@ -280,8 +284,12 @@ a {
   resize: none;
 }
 
-#id_name::placeholder, #id_message::placeholder, #id_link::placeholder {
+#id_name::placeholder, #id_link::placeholder {
   color: #ffffff;
+}
+
+#id_message::placeholder {
+  color: black;
 }
 
 #id_name:focus, #id_message:focus, #id_link:focus {

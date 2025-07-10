@@ -10,10 +10,10 @@ class Slot(models.Model):
     front_text_color = models.CharField(max_length=7, default="#ffffff")
 
     # Back of card
-    message = models.TextField(max_length=150)
+    message = models.TextField(max_length=100)
     link = models.URLField(blank=True, null=True)
     back_bg_color = models.CharField(max_length=7, default="#148a62")
-    back_text_color = models.CharField(max_length=7, default="#ffffff")
+    back_text_color = models.CharField(max_length=7, default="#000000")
 
     # Payment
     payment_proof = models.URLField(max_length=500)

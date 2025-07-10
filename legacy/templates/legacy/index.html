@@ -69,7 +69,7 @@
               </div>
               <div class="bol-back-card" style="background-color: ${slot.back_bg_color}; color: ${slot.back_text_color};">
                   <div class="bol-back-card-message">
-                  <a href="/card-info/${slot.slot_number}/${slot.name}/">
+                  <a href="/card-info/${slot.slot_number}/${slot.name}/" style="color: ${slot.back_text_color};">
                     <p>“${slot.message || ''}”</p>
                   </a>
                   ${slot.link ? `<a href="${slot.link}" target="_blank">🔗</a>` : ''}

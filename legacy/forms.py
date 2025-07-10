@@ -49,8 +49,8 @@ class SlotForm(forms.ModelForm):
             'message': forms.Textarea(attrs={
                 'class': 'form-control', 
                 'rows': 3, 
-                'maxlength': '150', 
-                'placeholder': 'Enter your legacy message (max 150 characters)'
+                'maxlength': '100', 
+                'placeholder': 'Enter your legacy message (max 100 characters)'
                 }),
             'link': forms.URLInput(attrs={
                 'class': 'form-control',
@@ -66,7 +66,8 @@ class SlotForm(forms.ModelForm):
                 'type': 'color', 
                 'class': 'form-control form-control-color',
                 'onchange': 'colorTextChange(this.value, document.getElementById("id_name"), document.getElementById("front-text-gauge"))',
-                'oninput': 'colorTextChange(this.value, document.getElementById("id_message"), document.getElementById("back-text-gauge"))'
+                'oninput': 'colorTextChange(this.value, document.getElementById("id_message"), document.getElementById("back-text-gauge"))',
+                'value': '#000000'
                 }),
             'payment_amount': forms.HiddenInput()
         }
