@@ -27,7 +27,8 @@ class SlotForm(forms.ModelForm):
                 'class': 'form-control', 
                 'min': 1,
                 'max': 20000,
-                'readonly': 'readonly'
+                'readonly': 'readonly',
+                'placeholder': 'Click "Check Open Slots" to get started.'
                 }),
             'name': forms.TextInput(attrs={
                 'class': 'form-control',

@@ -2,9 +2,6 @@
 
 {% block content %}
 <div class="bol-main-content-container">
-  <div class="bol-body-title">
-    Bytes of Legacy
-  </div>
   <div class="bol-card-grid bol-body-content" id="slot-container">
     <!-- JavaScript will populate this -->
   </div>
@@ -15,8 +12,8 @@
   let offset = 0;
   const limit = 50;
   let isLoading = false;
-  let allLoaded = false; // Optional: Set to true when no more data is available
-  
+  let allLoaded = false;
+
   function loadSlots() {
     if (isLoading || allLoaded) return; // Prevent overlapping calls
     isLoading = true;
@@ -25,7 +22,10 @@
       .then(response => response.json())
       .then(data => {
         data.slots.forEach(slot => {
-          container.appendChild(renderSlotCard(slot));
+          const card = renderSlotCard(slot);
+          container.appendChild(card);
+          // Apply font resizing for newly added cards
+          applyFontResizeToNewCard(card);
         });
 
         if (data.slots.length < limit) {
@@ -33,8 +33,6 @@
         }
 
         offset += limit;
-
-        checkAndLoadIfShort();
       })
       .catch(error => {
         console.error("Failed to load slots:", error);
@@ -44,86 +42,108 @@
       });
   }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      loadSlots();
-      checkAndLoadIfShort();
-    });
-    
-    // index.html card rendering (JS equivalent of card.html)
-    function renderSlotCard(slot) {
-      const div = document.createElement('div');
-      div.className = 'bol-legacy-card';
-      div.id = `#${slot.name || ''}`;
+  document.addEventListener("DOMContentLoaded", () => {
+    loadSlots();
+  });
 
-      if (slot.claimed) {
-          if (slot.verified) {
-          div.innerHTML = `
-              <div class="bol-card-flip-inner">
-              <div class="bol-front-card" style="background-color: ${slot.front_bg_color}; color: ${slot.front_text_color};">
-                  <div class="bol-photo-card">
-                  <img src="${slot.icon}" alt="${slot.name}" class="bol-photo-card-actual">
-                  </div>
-                  <div class="bol-front-card-name">
-                  ${slot.name}
-                  </div>
+  // index.html card rendering (JS equivalent of card.html)
+  function renderSlotCard(slot) {
+    const div = document.createElement('div');
+    div.className = 'bol-legacy-card';
+    div.id = `#${slot.name || ''}`;
+
+    if (slot.claimed) {
+      if (slot.verified) {
+        div.innerHTML = `
+          <div class="bol-card-flip-inner">
+            <div class="bol-front-card" style="background-color: ${slot.front_bg_color}; color: ${slot.front_text_color};">
+              <div class="bol-photo-card">
+                <img src="${slot.icon}" alt="${slot.name}" class="bol-photo-card-actual">
               </div>
-              <div class="bol-back-card" style="background-color: ${slot.back_bg_color}; color: ${slot.back_text_color};">
-                  <div class="bol-back-card-message">
-                  <a href="/card-info/${slot.slot_number}/${slot.name}/" style="color: ${slot.back_text_color};">
-                    <p>“${slot.message || ''}”</p>
-                  </a>
-                  ${slot.link ? `<a href="${slot.link}" target="_blank">🔗</a>` : ''}
-                  </div>
+              <div class="bol-front-card-name">
+                ${slot.name}
               </div>
+            </div>
+            <div class="bol-back-card" style="background-color: ${slot.back_bg_color}; color: ${slot.back_text_color};">
+              <div class="bol-back-card-message">
+                <a href="/card-info/${slot.slot_number}/${slot.name}/" style="color: ${slot.back_text_color};" class="message-resize">
+                  <p>“${slot.message || ''}”</p>
+                </a>
+                ${slot.link ? `<a href="${slot.link}" target="_blank">🔗</a>` : ''}
               </div>
-              
-          `;
-          } else {
-          div.innerHTML = `
-              <div class="bol-card-pending">
-                <div class="bol-card-pending-middle">
-                  <div style="font-weight: bold;">Pending</div>
-                  <div class="class-number">Slot #: ${slot.slot_number}</div>
-                </div>
-              </div>
-          `;
-          }
+            </div>
+          </div>
+        `;
       } else {
-          div.innerHTML = `
-          <a href="/claim/${slot.slot_number}/">
-              <div class="bol-card-empty">
-                <div class="bol-available">Available</div>
-                <div class="class-number">Slot #: ${slot.slot_number}</div>
-                <button style="display: block; margin: auto;">
-                    Claim for ₱${slot.price}
-                </button>
-              </div>
-          </a>
-          `;
+        div.innerHTML = `
+          <div class="bol-card-pending">
+            <div class="bol-card-pending-middle">
+              <div style="font-weight: bold;">Pending</div>
+              <div class="class-number">Slot #: ${slot.slot_number}</div>
+            </div>
+          </div>
+        `;
       }
-      return div;
+    } else {
+      div.innerHTML = `
+        <a href="/claim/${slot.slot_number}/">
+          <div class="bol-card-empty">
+            <div class="bol-available">Available</div>
+            <div class="class-number">Slot #: ${slot.slot_number}</div>
+            <button style="display: block; margin: auto;">
+              Claim for ₱${slot.price}
+            </button>
+          </div>
+        </a>
+      `;
     }
+    return div;
+  }
 
-    // // Infinite scroll
-    const scrollContainer = document.querySelector('.bol-body-content');
+  // Infinite scroll for the whole page
+  window.addEventListener('scroll', () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
 
-    scrollContainer.addEventListener('scroll', () => {
-      const bottomReached =
-        scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 100;
+    // Check if the user has scrolled near the bottom of the page
+    const bottomReached = scrollPosition >= documentHeight - 100;
 
-      if (bottomReached && !isLoading && !allLoaded) {
-        loadSlots();
-      }
+    if (bottomReached && !isLoading && !allLoaded) {
+      loadSlots();
+    }
+  });
+
+  // Function to fit text inside the container
+  function fitText(el, min = 12, max = 32) {
+    const container = el.parentElement;
+    let fontSize = max;
+    el.style.fontSize = fontSize + "px";
+
+    while ((el.scrollHeight > container.clientHeight || el.scrollWidth > container.clientWidth) && fontSize > min) {
+      fontSize -= 1;
+      el.style.fontSize = fontSize + "px";
+    }
+  }
+
+  // Function to apply text resizing to new card
+  function applyFontResizeToNewCard(card) {
+    const messageElement = card.querySelector('.message-resize p');
+    if (messageElement) {
+      fitText(messageElement);
+      // Listen to resize events on the card's parent container
+      const resizeObserver = new ResizeObserver(() => fitText(messageElement));
+      resizeObserver.observe(card.querySelector('.bol-back-card'));
+    }
+  }
+
+  // Initial resize for all loaded messages
+  window.addEventListener("DOMContentLoaded", () => {
+    const allMessages = document.querySelectorAll('.message-resize p');
+    allMessages.forEach(p => {
+      fitText(p);
+      const resizeObserver = new ResizeObserver(() => fitText(p));
+      resizeObserver.observe(p.parentElement);
     });
-    // window.addEventListener('scroll', () => {
-    //   const bottomReached = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
-    //   if (bottomReached) loadSlots();
-    // });
-
-    function checkAndLoadIfShort() {
-      if (scrollContainer.scrollHeight <= scrollContainer.clientHeight + 50 && !allLoaded) {
-        loadSlots();
-      }
-    }
+  });
 </script>
 {% endblock %}

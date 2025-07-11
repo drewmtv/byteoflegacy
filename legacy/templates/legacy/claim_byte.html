@@ -19,7 +19,7 @@
   .bol-top-forms {
     position: relative;
     border-radius: 50px;    
-    background-color: #4CAF50;
+    background-color: white;
     overflow: hidden;
   }
 
@@ -45,6 +45,10 @@
 
   #id_slot_number, .bol-custom-file-upload {
     text-align: center;
+    font-weight: bold;
+  }
+
+  #price-indicator {
     font-weight: bold;
   }
 
@@ -79,11 +83,7 @@ Claim your Byte
 {% endblock %}
 
 {% block content %}
-<!-- The title -->
-<div class="bol-body-title">
-  Claim your Byte
-</div>
-<div class="bol-body-content">
+<div class="bol-body-content bol-main-content-container">
 
   <button id="myBtn">Check Open Slots</button>
   <!--Slots Available Modal -->
@@ -109,7 +109,7 @@ Claim your Byte
       {{ form.slot_number }}
       {{ form.payment_amount }}
     </div>
-    <p id="price-indicator" style="font-weight: bold;"></p>
+    <p id="price-indicator"></p>
     <br>
     Front
     <div class="bol-legacy-card">

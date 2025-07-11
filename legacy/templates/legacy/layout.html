@@ -17,21 +17,21 @@
     </style>
 </head>
 <body>
-    <div class="bol-fluid-container bol-header-height">        
-        <div class="bol-container bol-header">
-            <nav class="bol-navbar">
-                <a href="{% url 'legacy:index' %}" class="bol-navbar-brand">
-                    <img src="{% static 'legacy/favicon/Group 1 copy.png' %}" alt="Byte of Legacy" id="bol-nav-logo">
-                </a>
-                <ul class="bol-navbar-nav">
-                    <li class="bol-nav-item"><a href="{% url 'legacy:about' %}" class="bol-nav-link">About</a></li>
-                    <li class="bol-nav-item"><a href="{% url 'legacy:claim' %}" class="bol-nav-link" style="background-color: #2A9DF4;">Claim a Byte!</a></li>
-                </ul>
-            </nav>
+    <nav class="bol-navbar">
+        <div style="height: 10vh;">
+            <a href="{% url 'legacy:index' %}" class="bol-navbar-brand">
+                <img src="{% static 'legacy/favicon/Bytes of Legacy2 copy.png' %}" alt="Byte of Legacy" id="bol-nav-logo">
+            </a>
         </div>
-                
-    </div>
-    <div class="bol-fluid-container bol-body-height">
+        <button class="bol-toggle-btn" id="bol-toggle-btn">
+            <i class="material-icons">menu</i>
+        </button>
+        <ul class="bol-navbar-nav" id="bol-navbar-nav">
+            <li class="bol-nav-item"><a href="{% url 'legacy:about' %}" class="bol-nav-link">About</a></li>
+            <li class="bol-nav-item"><a href="{% url 'legacy:claim' %}" class="bol-nav-link" style="background-color: #2A9DF4;">Claim</a></li>
+        </ul>
+    </nav>
+    <div class="bol-fluid-container" style="margin-top: 15vh;">
         <div class="bol-container block-main-content">
             {% block content %}
             {% endblock %}
@@ -39,140 +39,22 @@
     </div>
 
     <script>
-        // document.addEventListener("DOMContentLoaded", function () {
-        // let offset = 0;
-        // const limit = 20;
-        // let loading = false;
-        // let allLoaded = false;
+        const navbar = document.querySelector('.bol-navbar');
 
-        // async function loadSlots() {
-        //     if (loading || allLoaded) return;
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        })
 
-        //     loading = true;
-        //     try {
-        //     const response = await fetch(`/slots/chunk/?offset=${offset}&limit=${limit}`);
-        //     const data = await response.json();
+        const toggleBtn = document.getElementById("bol-toggle-btn");
+        const navLinks = document.getElementById("bol-navbar-nav");
 
-        //     if (data.slots.length === 0) {
-        //         allLoaded = true;
-        //         return;
-        //     }
-
-        //     data.slots.forEach(slot => {
-        //         const button = document.createElement('button');
-        //         button.className = `slot-btn ${slot.claimed ? 'taken' : 'available'}`;
-        //         button.disabled = slot.claimed;
-        //         button.dataset.slot = slot.slot_number;
-        //         button.innerHTML = `
-        //         ${slot.slot_number}<br>
-        //         ${!slot.claimed ? `<span style="color:#2A9DF4;font-weight:bold;">${slot.price}</span>` : ''}
-        //         `;
-        //         container.appendChild(button);
-        //     });
-
-        //     offset += limit;
-        //     loading = false;
-        //     } catch (err) {
-        //     console.error('Error loading slots:', err);
-        //     loading = false;
-        //     }
-        // }
-
-        // // Initial load
-        // loadSlots();
-
-        // // // Infinite scroll
-        // window.addEventListener('scroll', () => {
-        //     const bottomReached = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
-        //     if (bottomReached) loadSlots();
-        // });
-        // });
-        // const container = document.getElementById('slot-container');
-        // let offset = 0;
-        // const limit = 20;
-
-        // function loadSlots() {
-        // fetch(`/slots/chunk/?offset=${offset}&limit=${limit}`)
-        //     .then(response => response.json())
-        //     .then(data => {
-        //     const container = document.getElementById('slot-container');
-        //     data.slots.forEach(slot => {
-        //         const div = document.createElement('div');
-        //         div.innerHTML = renderSlotCard(slot); // renderCard is your JS template function
-        //         container.appendChild(div);
-        //     });
-        //     offset += limit;
-        //     });
-        // }
-
-        // document.addEventListener("DOMContentLoaded", loadSlots);
-
-        // // index.html card rendering (JS equivalent of card.html)
-        // function renderSlotCard(slot) {
-        //     const div = document.createElement('div');
-        //     div.className = 'bol-legacy-card';
-        //     div.id = `#${slot.data?.name || ''}`;
-
-        //     if (slot.claimed) {
-        //         if (slot.verified) {
-        //         div.innerHTML = `
-        //             <div class="bol-card-flip-inner">
-        //             <div class="bol-front-card" style="background-color: ${slot.data.front_bg_color}; color: ${slot.data.front_text_color};">
-        //                 <div class="bol-photo-card">
-        //                 <img src="${slot.data.icon}" alt="${slot.data.name}" class="bol-photo-card-actual">
-        //                 </div>
-        //                 <div class="bol-front-card-name">
-        //                 ${slot.data.name}
-        //                 </div>
-        //             </div>
-        //             <div class="bol-back-card" style="background-color: ${slot.data.back_bg_color}; color: ${slot.data.back_text_color};">
-        //                 <div class="bol-back-card-message">
-        //                 <p>“${slot.data.message || ''}”</p>
-        //                 ${slot.data.link ? `<a href="${slot.data.link}" target="_blank">🔗</a>` : ''}
-        //                 </div>
-        //             </div>
-        //             </div>
-        //         `;
-        //         } else {
-        //         div.innerHTML = `
-        //             <div class="bol-card-pending">
-        //             <h1>Pending</h1>
-        //             <small>Slot #: ${slot.slot_number}</small>
-        //             </div>
-        //         `;
-        //         }
-        //     } else {
-        //         div.innerHTML = `
-        //         <a href="/claim/${slot.slot_number}/">
-        //             <div class="bol-card-empty">
-        //             <p class="bol-available">Available</p>
-        //             <small>Slot #: ${slot.slot_number}</small>
-        //             <button style="padding: 2px 5px; display: block; margin: 20px auto auto auto;">
-        //                 Claim this Byte for ₱${slot.price}
-        //             </button>
-        //             </div>
-        //         </a>
-        //         `;
-        //     }
-        //     return div;
-        // }
-
-        // // claim_byte.html slot button rendering
-        // function renderSlotButton(slot) {
-        //     const button = document.createElement('button');
-        //     button.type = 'button';
-        //     button.className = `slot-btn ${slot.claimed ? 'taken' : 'available'}`;
-        //     button.dataset.slot = slot.slot_number;
-        //     button.dataset.price = slot.price;
-        //     button.style.fontWeight = '100';
-        //     if (slot.claimed) {
-        //         button.disabled = true;
-        //     }
-        //     button.innerHTML = `${slot.slot_number}
-        //         <br>
-        //         ${!slot.claimed ? `<span style="color: #2A9DF4; font-weight: bold;">₱${slot.price}</span>` : ''}`;
-        //     return button;
-        // }
+        toggleBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        })
     </script>
 
 </body>
