@@ -2,7 +2,6 @@ body {
   margin: 0;
   background-color: #49451dfd;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  /* height: 100vh; */
   display: flex;
   flex-direction: column;
   
@@ -25,10 +24,8 @@ a {
 }
 
 .block-main-content {
-  /* background-color: #C7FF4A; */
-  /* border-radius: 12px; */
-  /* height: 100%; */
-}
+    background-color: #C7FF4A;
+  }
 
 /* index.html styles */
 .bol-main-content-container {
@@ -305,11 +302,11 @@ a {
   resize: none;
 }
 
-#id_name::placeholder, #id_link::placeholder, #id_slot_number::placeholder {
+#id_name::placeholder, #id_link::placeholder {
   color: #ffffff;
 }
 
-#id_message::placeholder {
+#id_message::placeholder, #id_slot_number::placeholder {
   color: black;
 }
 
@@ -414,7 +411,7 @@ a {
   max-width: 600px; 
   margin: auto; 
   font-size: 1.2rem; 
-  color: #ffffff;
+  color: #333;
   font-style: italic;
   font-weight: 300;
   margin-top: 1.2rem;

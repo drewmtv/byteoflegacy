@@ -1,5 +1,12 @@
 {% extends 'legacy/layout.html' %}
 
+{% block extra_heads %}
+<style>
+  .block-main-content {
+    background: none;
+  }
+</style>
+{% endblock %}
 {% block content %}
 <div class="bol-main-content-container">
   <div class="bol-card-grid bol-body-content" id="slot-container">

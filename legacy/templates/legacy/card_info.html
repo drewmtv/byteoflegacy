@@ -12,34 +12,105 @@
 
   <style>
     .bol-container {
-        background-color: {{slot.front_bg_color}};
+        background-color: {{slot.front_bg_color}}bf;
+    }
+
+    .bol-fluid-container {
+        flex-grow: 1;
+    }
+
+    .bol-main-container {
+        padding: 20px;
+        display: flex;
+        height: 75vh;
+    }
+
+    .bol-about-me-icon {
+        width: 45%;
+        display: flex;
+        align-items: center;
+    }
+
+    .bol-about-me-details {
+        width: 55%;
+        background-color: {{ slot.back_bg_color }}bf; 
+        color: {{ slot.back_text_color }};
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .bol-about-me-name {
+        font-weight: bold;
+        font-size: 2rem;
+    }
+
+    .bol-about-link {
+        display: flex; 
+        justify-content: space-around;
+        margin-top: 1.2rem;
+    }
+
+    .bol-about-link div {
+        padding: 10px;
+    }
+
+    #bol-slot-link, #bol-twitter-icon, #bol-facebook-icon {
+        font-size: 1rem;
+        color: {{ slot.back_text_color }};
+    }
+
+    @media (max-width: 768px) {
+        .bol-main-container {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bol-about-me-icon, .bol-about-me-details {
+            width: 90%;
+        }
+
+        .bol-about-link {
+            display: block;
+        }
     }
   </style>
 {% endblock %}
 
 {% block content %}
-<div class="bol-main-content-container bol-body-content">
-    <div style="color: {{slot.front_text_color}}; aspect-ratio: 1.586;width: 50%;" class="bol-container">
-        <div>{{ slot.name }}</div>
-        <img src="{{ slot.icon }}" alt="{{slot.name}} | {{ slot.slot_number }}" style="width: 100%; height: 100%; object-fit: contain;">
+<div class="bol-main-container bol-body-content">
+    <div class="bol-about-me-icon">
+        <div class="bol-photo-card">
+            <img src="{{ slot.icon }}" alt="{{ slot.name }}" class="bol-photo-card-actual">
+        </div>
     </div>
-    <div>
-        {{ slot.message }}
-    </div>
-    <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
-    target="_blank" 
-    rel="noopener noreferrer">
-    Share on Facebook
-    </a>
-    <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this Byte of Legacy slot for {{ slot.name }}" 
-    target="_blank"
-    rel="noopener noreferrer">
-    Share on Twitter
-    </a>
-    <div>
-        {% if slot.link %}
-            <a href="{{ slot.link }}" target="_blank" rel="noopener noreferrer" style="background-color: {{ slot.back_bg_color}}; color: {{ slot.back_text_color }};">Learn more about {{ slot.name }}</a>
-        {% endif %}
+    <div class="bol-about-me-details">
+        <div>
+            <div class="bol-about-me-name">
+                {{ slot.name }}
+            </div>
+            <div class="bol-about-statements bol-container" style="color: {{ slot.front_text_color }}; width: 75%; padding: 10px; position: relative;">
+                <div style="height: 100%; background-color: {{ slot.front_bg_color }}; width: 1.5%; position: absolute; top: 0; left: 0;"></div>
+                "{{ slot.message }}"
+            </div>
+            <div class="bol-about-link">
+                {% if slot.link %}
+                <div>
+                    <a href="{{ slot.link }}" target="_blank" id="bol-slot-link">Learn more about <strong>{{ slot.name }}</strong></a>
+                </div>
+                {% endif %}
+                <div>
+                    Share: <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" 
+                        target="_blank" 
+                        rel="noopener noreferrer" class="fa fa-facebook" id="bol-facebook-icon"></a> <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check out this Byte of Legacy slot for {{ slot.name }}" 
+                        target="_blank"
+                        rel="noopener noreferrer" class="fa fa-twitter" id="bol-twitter-icon"></a>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
