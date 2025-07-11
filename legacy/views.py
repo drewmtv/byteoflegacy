@@ -33,12 +33,21 @@ def index(request):
 def about(request):
     return render(request, 'legacy/about.html')
 
-def card_info_link(request, slot, name):
-    filtered_slot = Slot.objects.filter(slot_number=slot).values('slot_number', 'name', 'icon', 'front_bg_color', 'front_text_color', 'message', 'link', 'back_bg_color', 'back_text_color').first()
+def card_info_link(request, slot, name=None):
+    filtered_slot = Slot.objects.filter(slot_number=slot).values(
+        'slot_number', 'name', 'icon', 'front_bg_color', 'front_text_color',
+        'message', 'link', 'back_bg_color', 'back_text_color'
+    ).first()
 
+    # If slot doesn't exist, redirect to claim
     if filtered_slot is None:
-        return redirect("legacy:index")
+        return redirect("legacy:claim", slot=slot)
 
+    # If 'name' is not provided, redirect to full URL including name
+    if name is None:
+        return redirect("legacy:card-info-link", slot=slot, name=filtered_slot['name'])
+
+    # If slot exists and name is provided, render the page
     if settings.DEBUG:
         absolute_icon = request.build_absolute_uri(filtered_slot['icon'])
     else:
