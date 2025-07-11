@@ -67,3 +67,30 @@ def get_all_slots_with_status():
 
     cache.set(cache_key, all_slots, timeout=60)  # Cache for 1 minute
     return all_slots
+
+def get_price_by_slot_number(slot_number):
+    """
+    Return the price of a slot given its slot number.
+    Returns None if the slot is not found.
+    """
+    all_slots = get_all_slots_with_status()
+    for slot in all_slots:
+        if slot['slot_number'] == slot_number:
+            return slot['price']
+    return None
+
+def is_claimed(slot_number):
+    if slot_number is not None:
+        all_slots = get_all_slots_with_status()
+        for slot in all_slots:
+            if slot['slot_number'] == slot_number:
+                return slot['claimed']
+    return False
+
+def is_verified(slot_number):
+    if slot_number is not None:
+        all_slots = get_all_slots_with_status()
+        for slot in all_slots:
+            if slot['slot_number'] == slot_number:
+                return slot['verified']
+    return False

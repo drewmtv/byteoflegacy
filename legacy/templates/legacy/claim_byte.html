@@ -343,10 +343,8 @@ Claim your Byte
   const priceMap = {};
 
   window.addEventListener("load", () => {
-    const currentSlot = slotField.value;
-    if (priceMap[currentSlot]) {
-      payment_amount_holder.value = priceMap[currentSlot];
-      priceIndicator.innerHTML = "₱" + priceMap[currentSlot] + " only.";
+    if (payment_amount_holder) {
+      priceIndicator.innerHTML = "₱" + payment_amount_holder.value + " only.";
     }
   });
 

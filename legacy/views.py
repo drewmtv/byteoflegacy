@@ -16,7 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import Slot
 from .forms import SlotForm
 from .utils import upload_to_supabase_media, upload_to_supabase_confidential
-from .helpers import get_all_slots_with_status  # assuming you have this utility
+from .helpers import get_all_slots_with_status, get_price_by_slot_number, is_claimed, is_verified
 from .validators import validate_image_file
 
 import os
@@ -33,12 +33,21 @@ def index(request):
 def about(request):
     return render(request, 'legacy/about.html')
 
-def card_info_link(request, slot, name):
-    filtered_slot = Slot.objects.filter(slot_number=slot).values('slot_number', 'name', 'icon', 'front_bg_color', 'front_text_color', 'message', 'link', 'back_bg_color', 'back_text_color').first()
+def card_info_link(request, slot, name=None):
+    filtered_slot = Slot.objects.filter(slot_number=slot).values(
+        'slot_number', 'name', 'icon', 'front_bg_color', 'front_text_color',
+        'message', 'link', 'back_bg_color', 'back_text_color'
+    ).first()
 
+    # If slot doesn't exist, redirect to claim
     if filtered_slot is None:
-        return redirect("legacy:index")
+        return redirect("legacy:claim", slot=slot)
 
+    # If 'name' is not provided, redirect to full URL including name
+    if name is None:
+        return redirect("legacy:card-info-link", slot=slot, name=filtered_slot['name'])
+
+    # If slot exists and name is provided, render the page
     if settings.DEBUG:
         absolute_icon = request.build_absolute_uri(filtered_slot['icon'])
     else:
@@ -135,7 +144,16 @@ def claim_byte(request, slot=None):
 
             return redirect('legacy:success')
     else:
-        form = SlotForm(initial={'slot_number': slot} if slot else {})
+        if is_claimed(slot):
+            if is_verified(slot):
+                return redirect('legacy:card-info-link', slot=slot)
+            else:
+                return render(request, 'legacy/claim_byte.html', {
+                'form': form,
+                'slot': slot,
+                'all_slots': all_slots,
+            })
+        form = SlotForm(initial={'slot_number': slot, 'payment_amount': get_price_by_slot_number(slot)} if slot else {})
 
     all_slots = get_all_slots_with_status()
 
