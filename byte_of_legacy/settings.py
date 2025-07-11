@@ -54,6 +54,7 @@ if DEBUG:
     # The URL that serves the files inside MEDIA_ROOT
     MEDIA_URL = '/media/'
 else:
+    CSRF_TRUSTED_ORIGINS = [f"https://{host}" for host in ALLOWED_HOSTS]
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'    
     Current_DB = {
         'ENGINE': 'django.db.backends.postgresql',
