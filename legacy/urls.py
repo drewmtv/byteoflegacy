@@ -12,6 +12,7 @@ app_name = "legacy"
 
 urlpatterns = [
     path('', views.index, name="index"),
+    path('<int:slot>/', views.claim_byte, name="index"),
     path('card-info/<int:slot>/<str:name>/', views.card_info_link, name="card-info-link"),
     path('card-info/<int:slot>/', views.card_info_link, name="card-info-link"),
     path('about/', views.about, name='about'),

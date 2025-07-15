@@ -37,10 +37,10 @@ def get_all_slots_with_status():
         # Pricing logic
         if i in ICONIC_SLOTS_PRICING:
             price = ICONIC_SLOTS_PRICING[i]
-        elif 1 <= i <= 50:
-            price = 100
         elif i % 69 == 0:
             price = 1
+        elif 1 <= i <= 100:
+            price = 100
         else:
             price = 69
 
